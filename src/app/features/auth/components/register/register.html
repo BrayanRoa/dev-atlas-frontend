@@ -1,0 +1,39 @@
+<div class="flex min-h-screen w-full flex-col bg-gray-900 p-6">
+  <div class="m-auto w-full max-w-md rounded-lg border-2 border-gray-600 bg-gray-700 px-6 py-8">
+    <div class="text-center">
+      <h1 class="text-2xl font-bold text-white">Regístrate</h1>
+      <p class="mt-1 text-sm text-gray-300">Crea una cuenta para acceder a tu biblioteca de conocimiento.</p>
+    </div>
+
+    <form class="mt-6 flex flex-col gap-4" [formGroup]="registerForm" (ngSubmit)="register()">
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-bold text-white" for="firstName">Nombre</label>
+        <input id="firstName" type="text" pInputText [fluid]="true" formControlName="firstName" />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-bold text-white" for="lastName">Apellido</label>
+        <input id="lastName" type="text" pInputText [fluid]="true" formControlName="lastName" />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-bold text-white" for="email">Correo electrónico</label>
+        <input id="email" type="email" pInputText [fluid]="true" formControlName="email" />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-bold text-white" for="password">Contraseña</label>
+        <input id="password" type="password" pInputText [fluid]="true" formControlName="password" />
+      </div>
+
+      <button class="mt-2 w-full cursor-pointer rounded-md border border-neutral-200 bg-gray-600 px-4 py-2 text-white" type="submit">
+        Crear cuenta
+      </button>
+    </form>
+
+    <p class="mt-6 text-center text-sm text-white">
+      ¿Ya tienes una cuenta?
+      <a href="/auth/login" class="text-blue-500">Inicia sesión</a>
+    </p>
+  </div>
+</div>
