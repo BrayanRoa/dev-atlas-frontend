@@ -4,13 +4,17 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { LoginSuccessResponse } from '../../interfaces/auth.interfaces';
+import { Router } from '@angular/router';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-login',
   imports: [
     InputTextModule,
     ButtonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ProgressSpinnerModule
   ],
   templateUrl: './login.html',
   styleUrl: './login.css',
@@ -19,10 +23,15 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent implements OnInit{
 
   loginForm!: FormGroup
+  loading!:boolean
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+    this.loading = false;
     this.buildForm();
   }
 
@@ -33,13 +42,20 @@ export class LoginComponent implements OnInit{
     });
   }
 
-  login(){
+  onLogin(){
+    this.loading = true;
     this.authService.login(this.loginForm.value).subscribe({
-      next: (response) => {
-        console.log(response);
+      next: (response:LoginSuccessResponse) => {
+        setTimeout(() => {
+          this.loading = false;
+          localStorage.setItem('token', response.access_token);
+          this.router.navigate(['/dashboard/topics']);
+        }, 2000);
       },
       error: (error) => {
         console.error(error);
+        this.loading = false;
+        // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al iniciar sesión' });
       },
     });
   }
