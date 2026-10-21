@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
+import { LoginComponent } from './components/login/login';
 
 @Component({
   selector: 'app-auth',
-  imports: [],
+  imports: [LoginComponent],
   templateUrl: './auth.html',
   styleUrl: './auth.css',
 })
 export class AuthPages {
 
   private _tab: "login" | "register" = 'login';
-
 
   setTab(tab: "login" | "register") {
     this._tab = tab;
