@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, LoginResult } from '../../services/auth.service';
 import { LoginSuccessResponse } from '../../interfaces/auth.interfaces';
 import { Router } from '@angular/router';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-login',
@@ -14,16 +16,20 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     InputTextModule,
     ButtonModule,
     ReactiveFormsModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
+    ToastModule
   ],
   templateUrl: './login.html',
   styleUrl: './login.css',
   host: { class: 'block' },
+  providers: [MessageService]
 })
 export class LoginComponent implements OnInit{
 
   loginForm!: FormGroup
   loading!:boolean
+
+  private readonly messageService = inject(MessageService);
 
   constructor(
     private authService: AuthService,
@@ -45,18 +51,31 @@ export class LoginComponent implements OnInit{
   onLogin(){
     this.loading = true;
     this.authService.login(this.loginForm.value).subscribe({
-      next: (response:LoginSuccessResponse) => {
-        setTimeout(() => {
-          this.loading = false;
-          localStorage.setItem('token', response.access_token);
-          this.router.navigate(['/dashboard/topics']);
-        }, 2000);
-      },
-      error: (error) => {
-        console.error(error);
-        this.loading = false;
-        // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al iniciar sesión' });
+      next: (response:LoginResult) => {
+        this.handleLoginResult(response);
       },
     });
+  }
+
+  private handleLoginResult(result: LoginResult): void {
+    if(result === "success"){
+      setTimeout(() => {
+        this.loading = false;
+        this.router.navigate(['/dashboard/topics']);
+      }, 2000);
+    }else if(result === "invalid"){
+      setTimeout(() => {
+        this.loading = false;
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Credenciales incorrectas' });
+      }, 2000);
+    }else{
+      setTimeout(() => {
+        this.loading = false;
+        this.messageService.add({ 
+          severity: 'error', 
+          summary: 'Error', 
+          detail: 'Error al iniciar sesión - Contacta con el administrador' });
+      }, 2000);
+    }
   }
 }

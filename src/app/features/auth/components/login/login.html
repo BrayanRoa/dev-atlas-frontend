@@ -22,17 +22,6 @@
         type="submit"
         [loading]="loading" 
         styleClass="mt-2 w-full cursor-pointer rounded-md border !border-neutral-200 !bg-line px-4 py-2 text-white" />
-
-      <!-- <button 
-        class="relative mt-2 w-full cursor-pointer rounded-md border border-neutral-200 bg-line px-4 py-2 text-white" 
-        type="submit">
-        @if(loading){
-          <p-progressSpinner mode="indeterminate" [style]="{ width: '30px', height: '30px' }" />
-        }
-        @else{
-          Iniciar sesión
-        }
-      </button> -->
     </form>
 
     <p class="mt-6 text-center text-sm text-white">
@@ -41,3 +30,5 @@
     </p>
   </div>
 </div>
+
+<p-toast />

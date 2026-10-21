@@ -14,15 +14,28 @@
     </div>
 
     <div class="col-span-4 flex justify-end items-center">
+        
+        <div class="relative">
+            <button
+                type="button"
+                class="rounded-3xl bg-line px-4 py-2 text-text hover:bg-line/50 hover:text-white transition-all duration-300"
+                (click)="menuOpen = !menuOpen"
+                >
+                Brayan Roa
+            </button>
 
-        <p-splitbutton severity="contrast" >
-            <ng-template #content>
-                <span class="flex items-center font-bold">
-                    <img alt="logo" src="https://primefaces.org/cdn/primeng/images/logo.svg" style="height: 1rem; margin-right: 0.5rem" />
-                    <span>Brayan Roa</span>
-                </span>
-            </ng-template>
-        </p-splitbutton>
+            @if(menuOpen){
+                <div class="absolute right-0 z-10 mt-2 w-48 rounded-md border border-line bg-panel py-1">
+
+                    @for (item of items; track $index) {
+                        <button type="button" class="block w-full px-3 py-2 text-left text-text hover:bg-line hover:text-text" (click)="menuOpen = false">
+                            <i [class]="item.icon + ' text-lg'"></i>
+                            {{ item.label }}
+                        </button>
+                    }
+                </div>
+            }
+        </div>
 
     </div>
 </div>
