@@ -8,4 +8,5 @@ import { Component } from '@angular/core';
 })
 export class TopicDetail {
 
+  tags: string[] = ['tag1', 'tag2', 'tag3'];
 }

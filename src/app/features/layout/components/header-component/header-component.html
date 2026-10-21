@@ -1,1 +1,28 @@
-<p>header-component works!</p>
+<div class="grid grid-cols-12 p-4 gap-2 bg-main w-full h-14">
+
+    <div class="col-span-8 ">
+        <p-iconfield class="w-full">
+            <p-inputicon class="pi pi-search" />
+            <input
+              pInputText
+              type="text"
+              variant="filled"
+              placeholder="Buscar en Dev Atlas"
+              class="w-full !bg-panel !text-text"
+            />
+          </p-iconfield>
+    </div>
+
+    <div class="col-span-4 flex justify-end items-center">
+
+        <p-splitbutton severity="contrast" >
+            <ng-template #content>
+                <span class="flex items-center font-bold">
+                    <img alt="logo" src="https://primefaces.org/cdn/primeng/images/logo.svg" style="height: 1rem; margin-right: 0.5rem" />
+                    <span>Brayan Roa</span>
+                </span>
+            </ng-template>
+        </p-splitbutton>
+
+    </div>
+</div>
