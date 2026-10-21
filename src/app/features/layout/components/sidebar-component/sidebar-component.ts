@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { TopicDialogService } from '../../../topics/services/topic-dialog.service';
 
 @Component({
   selector: 'app-sidebar-component',
@@ -8,4 +9,12 @@ import { Component } from '@angular/core';
 })
 export class SidebarComponent {
 
+  private readonly topicDialogService = inject(TopicDialogService);
+
+  /**
+   * Abre el modal para crear un nuevo topic
+   */
+  onCreateTopic(): void {
+    this.topicDialogService.show('create', 'Crear nuevo topic');
+  }
 }

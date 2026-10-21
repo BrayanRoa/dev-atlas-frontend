@@ -1,0 +1,105 @@
+<p-dialog
+  [header]="topicDialogService.title()"
+  [modal]="true"
+  appendTo="body"
+  draggable="false"
+  [visible]="topicDialogService.open()"
+  (visibleChange)="topicDialogService.close()"
+  styleClass=" !bg-main border-none"
+  [style]="{ width: '500px' }"
+>
+  <ng-template #header>
+    <div class="inline-flex items-center justify-center gap-2">
+      <span class="font-bold whitespace-nowrap text-text"
+        >{{ topicDialogService.title() }}</span
+      >
+    </div>
+  </ng-template>
+
+  <!-- formulario -->
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-1 w-full">
+      <label for="name" class="text-sm font-medium text-text">Name</label>
+      <input
+        type="text"
+        id="name"
+        class="w-full p-2 border border-gray-300 rounded-md text-text"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1 w-full">
+      <label for="description" class="text-sm font-medium text-text"
+        >Description</label
+      >
+      <input
+        type="text"
+        id="description"
+        class="w-full p-2 border border-gray-300 rounded-md text-text"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1 w-full">
+      <label for="icon" class="text-sm font-medium text-text">Icono</label>
+      <p-select
+        appendTo="body"
+        fluid="true"
+        [options]="icons"
+        [(ngModel)]="selectedIcon"
+        optionLabel="name"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        placeholder="Select a Country"
+        class="w-full md:w-56 !bg-main"
+      >
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2">
+            <img
+              src="assets/images/{{ selectedIcon?.icon }}"
+              style="width: 18px"
+            />
+            <div class="text-text">{{ selectedOption.name }}</div>
+          </div>
+        </ng-template>
+        <ng-template let-icon #item>
+          <div class="flex items-center gap-2">
+            <img src="assets/images/{{ icon.icon }}" style="width: 18px" />
+            <div>{{ icon.name }}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+
+    <div class="flex flex-col gap-1 w-full">
+      <label for="icon" class="text-sm font-medium text-text">Tags</label>
+      <p-select
+        appendTo="body"
+        fluid="true"
+        [options]="icons"
+        [(ngModel)]="selectedIcon"
+        optionLabel="name"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        placeholder="Select a Country"
+        class="w-full md:w-56 !bg-main"
+      >
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2">
+            <img
+              src="assets/images/{{ selectedIcon?.icon }}"
+              style="width: 18px"
+            />
+            <div class="text-text">{{ selectedOption.name }}</div>
+          </div>
+        </ng-template>
+        <ng-template let-icon #item>
+          <div class="flex items-center gap-2">
+            <img src="assets/images/{{ icon.icon }}" style="width: 18px" />
+            <div>{{ icon.name }}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+  </div>
+</p-dialog>
