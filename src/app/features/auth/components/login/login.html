@@ -20,8 +20,9 @@
         label="Iniciar sesión" 
         icon="pi pi-sign-in" 
         type="submit"
-        [loading]="loading" 
-        styleClass="mt-2 w-full cursor-pointer rounded-md border !border-neutral-200 !bg-line px-4 py-2 text-white" />
+        [loading]="loading"
+        [disabled]="loginForm.invalid" 
+        styleClass="mt-2 w-full cursor-pointer rounded-md border !border-neutral-200 !bg-line px-4 py-2 !text-text" />
     </form>
 
     <p class="mt-6 text-center text-sm text-white">

@@ -25,7 +25,13 @@ export class AuthService {
   }
 
   register(registerRequest: RegisterRequest):Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/register`, registerRequest);
+    return this.http.post<LoginSuccessResponse>(`${this.apiUrl}/register`, registerRequest).pipe(
+      tap((response) => {
+        this.saveToken(response.access_token);
+        this._userInformation = response.user;
+      }),
+      map(()=> "success" as LoginResult)
+    );
   }
 
   login(loginRequest: LoginRequest):Observable<LoginResult> {
@@ -43,6 +49,11 @@ export class AuthService {
         return of("error" as LoginResult);
       })
     );
+  }
+
+  logout(): void {
+    localStorage.removeItem(this.tokenKey);
+    this._userInformation = null;
   }
 
   get userInformation(): User | null {

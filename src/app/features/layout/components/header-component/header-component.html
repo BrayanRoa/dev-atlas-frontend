@@ -21,14 +21,17 @@
                 class="rounded-3xl bg-line px-4 py-2 text-text hover:bg-line/50 hover:text-white transition-all duration-300"
                 (click)="menuOpen = !menuOpen"
                 >
-                Brayan Roa
+                {{userInformation?.firstName | titlecase }} {{userInformation?.lastName | titlecase}}
             </button>
 
             @if(menuOpen){
                 <div class="absolute right-0 z-10 mt-2 w-48 rounded-md border border-line bg-panel py-1">
 
                     @for (item of items; track $index) {
-                        <button type="button" class="block w-full px-3 py-2 text-left text-text hover:bg-line hover:text-text" (click)="menuOpen = false">
+                        <button     
+                            type="button" 
+                            class="block w-full px-3 py-2 text-left text-text hover:bg-line hover:text-text"  
+                            (click)="item.command?.({}); menuOpen = false;">
                             <i [class]="item.icon + ' text-lg'"></i>
                             {{ item.label }}
                         </button>
