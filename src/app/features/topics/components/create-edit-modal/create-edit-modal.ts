@@ -1,9 +1,9 @@
-import { Component, computed, inject, Input } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 import { DialogModule } from 'primeng/dialog';
 import { TopicDialogService } from '../../services/topic-dialog.service';
 import { SelectModule } from 'primeng/select';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 interface Icon {
   name: string;
@@ -17,20 +17,21 @@ interface Tag {
 
 @Component({
   selector: 'app-create-edit-modal',
-  imports: [DialogModule, SelectModule, FormsModule],
+  imports: [DialogModule, SelectModule, ReactiveFormsModule],
   templateUrl: './create-edit-modal.html',
   styleUrl: './create-edit-modal.css',
 })
 export class CreateEditModal {
   readonly topicDialogService = inject(TopicDialogService);
 
-  icons: Icon[] | undefined;
-  selectedIcon: Icon | undefined;
+  icons: Icon[] = [];
+  tags: Tag[] = [];
 
-  tags: Tag[] | undefined;
-  selectedTags: Tag[] | undefined;
+  form!: FormGroup;
 
   ngOnInit() {
+    this.buildForm()
+
     this.icons = [
       { name: 'Angular', icon: 'angular.png' },
       { name: 'AWS', icon: 'aws.png' },
@@ -48,5 +49,28 @@ export class CreateEditModal {
       { name: 'Tag 5', color: 'warning' },
       { name: 'Tag 6', color: 'danger' },
     ];
+  }
+
+  private buildForm(): void {
+    this.form = new FormGroup({
+      name: new FormControl('', [Validators.required, Validators.minLength(3)]),
+      description: new FormControl('', [Validators.required, Validators.minLength(10)]),
+      icon: new FormControl(null, [Validators.required]),
+      tags: new FormControl(null, [Validators.required, Validators.minLength(1)]),
+    })
+  }
+
+  onSubmit(): void {
+    console.log("onSubmit");
+    console.log(this.form.value);
+    if (this.form.invalid) {
+      return;
+    }
+
+    console.log(this.form.value);
+  }
+
+  onCancel(): void {
+    this.topicDialogService.close();
   }
 }
