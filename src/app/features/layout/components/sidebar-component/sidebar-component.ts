@@ -7,13 +7,15 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { Workspace, WorkspaceListResponse } from '../../../workspaces/interfaces/workspace.interface';
 import { catchError, finalize, of, tap } from 'rxjs';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-sidebar-component',
   imports: [
     ButtonModule,
     FormWorkspaceComponent,
-    ToastModule
+    ToastModule,
+    TitleCasePipe
   ],
   templateUrl: './sidebar-component.html',
   styleUrl: './sidebar-component.css',
@@ -32,6 +34,8 @@ export class SidebarComponent implements OnInit{
 
   // Variables de respuesta
   workspaces: Workspace[] = [];
+  workspaceSelected: Workspace | null = null;
+  
 
   ngOnInit(): void {
     this.getWorkspaces();
@@ -72,6 +76,8 @@ export class SidebarComponent implements OnInit{
     this.workSpaceService.getWorkspaces().subscribe({
       next: (response) => {
         this.workspaces = response.data;
+        this.workspaceSelected = this.workspaces[0] ?? null;
+        this.workSpaceService.currentWorkspace = this.workspaceSelected;
       },
       error: (error) => {
         console.error(error);
@@ -129,5 +135,14 @@ export class SidebarComponent implements OnInit{
       summary: 'Error',
       detail: message,
     });
+  }
+
+  /**
+   * Selecciona un workspace
+   * @param workspace - El workspace seleccionado
+   */
+  onSelectWorkspace(workspace: Workspace): void {
+    this.workspaceSelected = workspace;
+    this.workSpaceService.currentWorkspace = workspace;
   }
 }

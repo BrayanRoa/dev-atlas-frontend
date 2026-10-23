@@ -7,6 +7,11 @@ import { InputTextModule } from 'primeng/inputtext';
 import { IftaLabelModule } from 'primeng/iftalabel';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { WorkSpaceService } from '../../../workspaces/services/work-space.service';
+import { TopicService } from '../../services/topic.service';
+import { TopicCreatePayload } from '../../interfaces/topics.interfaces';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 interface Icon {
   name: string;
@@ -27,19 +32,28 @@ interface Tag {
     IftaLabelModule, 
     ReactiveFormsModule, 
     ButtonModule,
+    ToastModule,
   ],
   templateUrl: './create-edit-modal.html',
   styleUrl: './create-edit-modal.css',
+  providers: [MessageService],
 })
 export class CreateEditModal {
+  
+  // Servicios
   readonly topicDialogService = inject(TopicDialogService);
+  readonly workSpaceService = inject(WorkSpaceService);
+  readonly topicService = inject(TopicService);
+  readonly messageService = inject(MessageService);
 
+  // Variables de estado
   icons: Icon[] = [];
   tags: Tag[] = [];
 
+  // Formulario
   form!: FormGroup;
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.buildForm()
 
     this.icons = [
@@ -65,22 +79,64 @@ export class CreateEditModal {
     this.form = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.minLength(3)]),
       description: new FormControl('', [Validators.required, Validators.minLength(10)]),
-      icon: new FormControl(null, [Validators.required]),
-      tags: new FormControl(null, [Validators.required, Validators.minLength(1)]),
+      icon: new FormControl<Icon | null>(null, [Validators.required]),
+      tags: new FormControl<Tag | null>(null, [Validators.required]),
     })
   }
 
+  /**
+   * Envía el formulario para crear un nuevo topic
+   */
   onSubmit(): void {
-    console.log("onSubmit");
-    console.log(this.form.value);
-    if (this.form.invalid) {
+    const workSpaceId = this.workSpaceService.currentWorkspace?.id;
+    const icon = this.form.value.icon as Icon | null;
+
+    if (this.form.invalid || !workSpaceId || !icon) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Por favor, complete todos los campos requeridos',
+      });
       return;
     }
 
-    console.log(this.form.value);
+    const topic: TopicCreatePayload = {
+      title: this.form.value.name,
+      description: this.form.value.description,
+      icon: icon.icon,
+      content: '',
+      parentId: null,
+      workSpaceId,
+    };
+
+    this.topicService.createTopic(topic).subscribe({
+      next: (response) => {
+        this.createTopicMessage(response.data.title);
+        this.topicDialogService.close();
+      },
+      error: (error) => {
+        this.createTopicErrorMessage(error.error.message);
+      }
+    });
   }
 
   onCancel(): void {
     this.topicDialogService.close();
+  }
+
+  createTopicMessage(message: string): void {
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Topic creado',
+      detail: `El topic ${message} ha sido creado correctamente`,
+    });
+  }
+
+  createTopicErrorMessage(message: string): void {
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: message == 'Topic with this title already exists' ? 'El topic ya existe para este workspace' : 'Ocurrió un error al crear el topic',
+    });
   }
 }

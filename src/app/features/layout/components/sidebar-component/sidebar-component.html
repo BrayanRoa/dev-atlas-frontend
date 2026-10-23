@@ -26,7 +26,7 @@
           </div>
         </div>
         <div class="col-span-8 flex flex-col justify-center pl-2">
-          <span class="text-text text-xs font-bold">Workspace 1</span>
+          <span class="text-text text-xs font-bold">{{ workspaceSelected?.name | titlecase }}</span>
           <span class="text-text text-xs font-bold">12 topics</span>
         </div>
         <div class="col-span-2 flex justify-center items-center">
@@ -38,9 +38,9 @@
         class="absolute left-0 right-0 top-full z-10 mt-2 max-h-40 overflow-y-auto rounded-md border border-line bg-raised py-1"
       >
         @for (workspace of workspaces; track $index) {
-          <div class="flex justify-start items-center w-full gap-2 cursor-pointer hover:bg-line rounded-md p-2 transition-all duration-300">
+          <div class="flex justify-start items-center w-full gap-2 cursor-pointer hover:bg-line rounded-md p-2 transition-all duration-300" (click)="onSelectWorkspace(workspace)">
             <img src="/assets/icons/code.svg" alt="" class="size-5" />
-            <span class="text-text text-sm font-bold">{{ workspace.name }}</span>
+            <span class="text-text text-sm font-bold">{{ workspace.name | titlecase }}</span>
           </div>
         }
       </div>
