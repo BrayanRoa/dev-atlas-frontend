@@ -8,14 +8,15 @@ import { MenuItem } from 'primeng/api';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Router } from '@angular/router';
 import { TitleCasePipe } from '@angular/common';
-
+import { SplitButtonModule } from 'primeng/splitbutton';
 @Component({
   selector: 'app-header-component',
   imports: [
     InputTextModule,
     IconFieldModule,
     InputIconModule,
-    TitleCasePipe
+    TitleCasePipe,
+    SplitButtonModule
 ],
   templateUrl: './header-component.html',
   styleUrl: './header-component.css',
@@ -44,6 +45,6 @@ export class HeaderComponent {
   }
 
   get userInformation() {
-    return this.authService.userInformation;
+    return this.authService.userInformation?.firstName + ' ' + this.authService.userInformation?.lastName;
   }
 }

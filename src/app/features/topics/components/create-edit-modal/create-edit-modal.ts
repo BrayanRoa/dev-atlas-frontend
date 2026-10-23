@@ -20,7 +20,14 @@ interface Tag {
 
 @Component({
   selector: 'app-create-edit-modal',
-  imports: [DialogModule, SelectModule, InputTextModule, IftaLabelModule, ReactiveFormsModule, ButtonModule],
+  imports: [
+    DialogModule, 
+    SelectModule, 
+    InputTextModule, 
+    IftaLabelModule, 
+    ReactiveFormsModule, 
+    ButtonModule,
+  ],
   templateUrl: './create-edit-modal.html',
   styleUrl: './create-edit-modal.css',
 })

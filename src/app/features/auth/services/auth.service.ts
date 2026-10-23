@@ -1,7 +1,8 @@
 import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { RegisterRequest, LoginSuccessResponse, LoginRequest, User } from '../interfaces/auth.interfaces';
 import { catchError, map, Observable, of, tap } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 export type LoginResult = 'success' | 'invalid' | 'error';
 
@@ -10,11 +11,11 @@ export type LoginResult = 'success' | 'invalid' | 'error';
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:3000/api/auth';
-  private tokenKey = '';
+  private apiUrl = `${environment.apiUrl}/auth`;
+  private readonly tokenKey = 'access_token';
   private _userInformation:User | null = null;
+  private readonly http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
 
   private saveToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
@@ -58,5 +59,9 @@ export class AuthService {
 
   get userInformation(): User | null {
     return this._userInformation;
+  }
+
+  get token(): string | null {
+    return localStorage.getItem(this.tokenKey);
   }
 }
