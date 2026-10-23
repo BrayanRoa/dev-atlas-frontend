@@ -1,23 +1,23 @@
-export interface User {
+export interface IUser {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
 }
 
-export interface RegisterRequest {
+export interface IRegisterRequest {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
 }
 
-export interface LoginRequest {
+export interface ILoginRequest {
   email: string;
   password: string;
 }
 
-export interface LoginSuccessResponse {
-  user: User;
+export interface ILoginSuccessResponse {
+  user: IUser;
   access_token: string;
 }

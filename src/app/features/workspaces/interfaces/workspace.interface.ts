@@ -1,18 +1,22 @@
-export interface Workspace {
-    id: string;
-    name: string;
-    userId: string;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date | null;
+export interface IWorkspace {
+  id: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  userId?: string;
+  deletedAt?: Date | null;
 }
 
-export interface WorkspaceCreateResponse {
-    message: string;
-    data: Workspace;
+export interface IWorkspaceCreateRequest {
+  name: string;
 }
 
-export interface WorkspaceListResponse {
-    message: string;
-    data: Workspace[];
+export interface IWorkspaceCreateResponse {
+  message: string;
+  data: IWorkspace;
+}
+
+export interface IWorkspaceListResponse {
+  message: string;
+  data: IWorkspace[];
 }

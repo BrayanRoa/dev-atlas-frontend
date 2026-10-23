@@ -1,4 +1,4 @@
-export interface TopicCreatePayload {
+export interface ITopicCreatePayload {
   title: string;
   description: string;
   icon: string;
@@ -7,7 +7,7 @@ export interface TopicCreatePayload {
   workSpaceId: string;
 }
 
-export interface TopicCreateResponse {
+export interface ITopicCreateResponse {
   message: string;
   data: {
     title: string;

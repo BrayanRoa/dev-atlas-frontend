@@ -1,12 +1,12 @@
-import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { TopicDialogService } from '../../../topics/services/topic-dialog.service';
 import { ButtonModule } from 'primeng/button';
 import { FormWorkspaceComponent } from '../../../workspaces/components/form-workspace-component/form-workspace-component';
 import { WorkSpaceService } from '../../../workspaces/services/work-space.service';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { Workspace, WorkspaceListResponse } from '../../../workspaces/interfaces/workspace.interface';
-import { catchError, finalize, of, tap } from 'rxjs';
+import { IWorkspace, IWorkspaceCreateRequest } from '../../../workspaces/interfaces/workspace.interface';
+import { catchError, of, tap } from 'rxjs';
 import { TitleCasePipe } from '@angular/common';
 
 @Component({
@@ -33,8 +33,8 @@ export class SidebarComponent implements OnInit{
   private readonly messageService = inject(MessageService);
 
   // Variables de respuesta
-  workspaces: Workspace[] = [];
-  workspaceSelected: Workspace | null = null;
+  workspaces: IWorkspace[] = [];
+  workspaceSelected: IWorkspace | null = null;
   
 
   ngOnInit(): void {
@@ -76,7 +76,10 @@ export class SidebarComponent implements OnInit{
     this.workSpaceService.getWorkspaces().subscribe({
       next: (response) => {
         this.workspaces = response.data;
-        this.workspaceSelected = this.workspaces[0] ?? null;
+        const currentId = this.workSpaceService.currentWorkspace?.id;
+        this.workspaceSelected = this.workspaces.find((workspace) => workspace.id === currentId)
+          ?? this.workspaces[0]
+          ?? null;
         this.workSpaceService.currentWorkspace = this.workspaceSelected;
       },
       error: (error) => {
@@ -88,23 +91,27 @@ export class SidebarComponent implements OnInit{
   /**
    * Cierra el modal para crear un nuevo workspace
    */
-  onSubmitCreateNewWorkspaceModal(value: { name: string }): void {
-    if(value.name.trim() === '') {
+  onSubmitCreateNewWorkspaceModal(value: IWorkspaceCreateRequest): void {
+    if (value.name === '') {
       return;
     }
 
     this.workSpaceService.createWorkspace(value).pipe(
-      tap((response)=>{
+      tap((response) => {
+        this.workSpaceService.currentWorkspace = response.data;
+        this.workspaceSelected = response.data;
         this.createWorkSpaceMessage(response.data.name);
         this.createNewWorkspaceModal = false;
       }),
-      tap(()=>{
+      tap(() => {
         this.getWorkspaces();
       }),
-      catchError((error)=>{
-        if(error.status === 400 && error.error.message === "Workspace already exists for this user") {
-          this.createWorkSpaceErrorMessage("El workspace ya existe para este usuario");
-        }
+      catchError((error) => {
+        const apiMessage = error?.error?.message;
+        const message = apiMessage === 'Workspace already exists for this user'
+          ? 'El workspace ya existe para este usuario'
+          : 'Ocurrió un error al crear el workspace';
+        this.createWorkSpaceErrorMessage(message);
         return of(null);
       }),
     ).subscribe()
@@ -127,9 +134,6 @@ export class SidebarComponent implements OnInit{
    * @param message - El nombre del workspace creado
    */
   createWorkSpaceErrorMessage(message: string): void {
-    if(message === "Workspace already exists for this user") {
-      message = "El workspace ya existe para este usuario";
-    }
     this.messageService.add({
       severity: 'error',
       summary: 'Error',
@@ -141,8 +145,9 @@ export class SidebarComponent implements OnInit{
    * Selecciona un workspace
    * @param workspace - El workspace seleccionado
    */
-  onSelectWorkspace(workspace: Workspace): void {
+  onSelectWorkspace(workspace: IWorkspace): void {
     this.workspaceSelected = workspace;
     this.workSpaceService.currentWorkspace = workspace;
+    this.openListWorkspace = false;
   }
 }

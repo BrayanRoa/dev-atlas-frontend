@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
-import { TopicCreatePayload, TopicCreateResponse } from '../interfaces/topics.interfaces';
+import { ITopicCreatePayload, ITopicCreateResponse } from '../interfaces/topics.interfaces';
 
 
 @Injectable({
@@ -16,9 +16,9 @@ export class TopicService {
   /**
    * Crea un nuevo topic
    * @param topic - El topic a crear
-   * @returns Observable<TopicCreateResponse>
+   * @returns Observable<ITopicCreateResponse>
    */
-  createTopic(topic: TopicCreatePayload): Observable<TopicCreateResponse> {
-    return this.http.post<TopicCreateResponse>(`${this.baseUrl}`, topic);
+  createTopic(topic: ITopicCreatePayload): Observable<ITopicCreateResponse> {
+    return this.http.post<ITopicCreateResponse>(`${this.baseUrl}`, topic);
   }
 }

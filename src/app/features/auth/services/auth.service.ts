@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { RegisterRequest, LoginSuccessResponse, LoginRequest, User } from '../interfaces/auth.interfaces';
+import { IRegisterRequest, ILoginSuccessResponse, ILoginRequest, IUser } from '../interfaces/auth.interfaces';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
@@ -13,7 +13,7 @@ export class AuthService {
 
   private apiUrl = `${environment.apiUrl}/auth`;
   private readonly tokenKey = 'access_token';
-  private _userInformation:User | null = null;
+  private _userInformation: IUser | null = null;
   private readonly http = inject(HttpClient);
 
 
@@ -25,8 +25,8 @@ export class AuthService {
     return !!localStorage.getItem(this.tokenKey);
   }
 
-  register(registerRequest: RegisterRequest):Observable<string> {
-    return this.http.post<LoginSuccessResponse>(`${this.apiUrl}/register`, registerRequest).pipe(
+  register(registerRequest: IRegisterRequest):Observable<string> {
+    return this.http.post<ILoginSuccessResponse>(`${this.apiUrl}/register`, registerRequest).pipe(
       tap((response) => {
         this.saveToken(response.access_token);
         this._userInformation = response.user;
@@ -35,8 +35,8 @@ export class AuthService {
     );
   }
 
-  login(loginRequest: LoginRequest):Observable<LoginResult> {
-    return this.http.post<LoginSuccessResponse>(`${this.apiUrl}/login`, loginRequest).pipe(
+  login(loginRequest: ILoginRequest):Observable<LoginResult> {
+    return this.http.post<ILoginSuccessResponse>(`${this.apiUrl}/login`, loginRequest).pipe(
       tap((response) => {
         this.saveToken(response.access_token);
         this._userInformation = response.user;
@@ -57,7 +57,7 @@ export class AuthService {
     this._userInformation = null;
   }
 
-  get userInformation(): User | null {
+  get userInformation(): IUser | null {
     return this._userInformation;
   }
 

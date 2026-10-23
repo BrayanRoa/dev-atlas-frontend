@@ -9,16 +9,16 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ButtonModule } from 'primeng/button';
 import { WorkSpaceService } from '../../../workspaces/services/work-space.service';
 import { TopicService } from '../../services/topic.service';
-import { TopicCreatePayload } from '../../interfaces/topics.interfaces';
+import { ITopicCreatePayload } from '../../interfaces/topics.interfaces';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 
-interface Icon {
+interface IIcon {
   name: string;
   icon: string;
 }
 
-interface Tag {
+interface ITag {
   name: string;
   color: string;
 }
@@ -47,8 +47,8 @@ export class CreateEditModal {
   readonly messageService = inject(MessageService);
 
   // Variables de estado
-  icons: Icon[] = [];
-  tags: Tag[] = [];
+  icons: IIcon[] = [];
+  tags: ITag[] = [];
 
   // Formulario
   form!: FormGroup;
@@ -79,8 +79,8 @@ export class CreateEditModal {
     this.form = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.minLength(3)]),
       description: new FormControl('', [Validators.required, Validators.minLength(10)]),
-      icon: new FormControl<Icon | null>(null, [Validators.required]),
-      tags: new FormControl<Tag | null>(null, [Validators.required]),
+      icon: new FormControl<IIcon | null>(null, [Validators.required]),
+      tags: new FormControl<ITag | null>(null, [Validators.required]),
     })
   }
 
@@ -89,7 +89,7 @@ export class CreateEditModal {
    */
   onSubmit(): void {
     const workSpaceId = this.workSpaceService.currentWorkspace?.id;
-    const icon = this.form.value.icon as Icon | null;
+    const icon = this.form.value.icon as IIcon | null;
 
     if (this.form.invalid || !workSpaceId || !icon) {
       this.messageService.add({
@@ -100,7 +100,7 @@ export class CreateEditModal {
       return;
     }
 
-    const topic: TopicCreatePayload = {
+    const topic: ITopicCreatePayload = {
       title: this.form.value.name,
       description: this.form.value.description,
       icon: icon.icon,
@@ -112,15 +112,26 @@ export class CreateEditModal {
     this.topicService.createTopic(topic).subscribe({
       next: (response) => {
         this.createTopicMessage(response.data.title);
-        this.topicDialogService.close();
+        this.closeDialog();
       },
       error: (error) => {
-        this.createTopicErrorMessage(error.error.message);
+        this.createTopicErrorMessage(error?.error?.message);
       }
     });
   }
 
   onCancel(): void {
+    this.closeDialog();
+  }
+
+  onDialogVisibleChange(open: boolean): void {
+    if (!open) {
+      this.closeDialog();
+    }
+  }
+
+  private closeDialog(): void {
+    this.form?.reset();
     this.topicDialogService.close();
   }
 
@@ -136,7 +147,7 @@ export class CreateEditModal {
     this.messageService.add({
       severity: 'error',
       summary: 'Error',
-      detail: message == 'Topic with this title already exists' ? 'El topic ya existe para este workspace' : 'Ocurrió un error al crear el topic',
+      detail: message === 'Topic with this title already exists' ? 'El topic ya existe para este workspace' : 'Ocurrió un error al crear el topic',
     });
   }
 }

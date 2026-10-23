@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { IftaLabelModule } from 'primeng/iftalabel';
 import { InputTextModule } from 'primeng/inputtext';
+import { IWorkspaceCreateRequest } from '../../interfaces/workspace.interface';
 
 @Component({
   selector: 'app-form-workspace-component',
@@ -23,11 +24,23 @@ export class FormWorkspaceComponent implements OnInit{
 
   form!: FormGroup;
 
-  @Input() visible: boolean = false;
+  private _visible = false;
+
+  @Input()
+  set visible(value: boolean) {
+    this._visible = value;
+    if (!value) {
+      this.form?.reset();
+    }
+  }
+
+  get visible(): boolean {
+    return this._visible;
+  }
   
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() onCancelEvent = new EventEmitter<void>();
-  @Output() onSubmitEvent = new EventEmitter<{ name: string }>();
+  @Output() onSubmitEvent = new EventEmitter<IWorkspaceCreateRequest>();
   
   ngOnInit(): void {
     this.buildForm();
@@ -61,17 +74,10 @@ export class FormWorkspaceComponent implements OnInit{
    * Envía el formulario
    */
   onSubmit() {
-    if (this.form.invalid) {
+    const name = this.form.value.name.trim();
+    if (this.form.invalid || name === '') {
       return;
     }
-    this.onSubmitEvent.emit(this.form.value);
-    this.clearForm();
-  }
-
-  /**
-   * Limpia el formulario
-   */
-  private clearForm(): void {
-    this.form.reset();
+    this.onSubmitEvent.emit({ name });
   }
 }

@@ -4,7 +4,7 @@
   appendTo="body"
   draggable="false"
   [visible]="topicDialogService.open()"
-  (visibleChange)="topicDialogService.close()"
+  (visibleChange)="onDialogVisibleChange($event)"
   [style]="{ width: '500px' }"
 >
   <!-- header -->

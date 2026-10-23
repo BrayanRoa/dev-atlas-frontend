@@ -7,7 +7,6 @@ import { InputIconModule } from 'primeng/inputicon';
 import { MenuItem } from 'primeng/api';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Router } from '@angular/router';
-import { TitleCasePipe } from '@angular/common';
 import { SplitButtonModule } from 'primeng/splitbutton';
 @Component({
   selector: 'app-header-component',
@@ -15,7 +14,6 @@ import { SplitButtonModule } from 'primeng/splitbutton';
     InputTextModule,
     IconFieldModule,
     InputIconModule,
-    TitleCasePipe,
     SplitButtonModule
 ],
   templateUrl: './header-component.html',
