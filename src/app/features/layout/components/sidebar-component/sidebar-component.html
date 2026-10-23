@@ -1,10 +1,75 @@
-<div class="bg-sidebar h-full w-full overflow-y-auto border-r border-line">
+<div class="bg-sidebar h-full w-full overflow-y-auto border-r border-line flex flex-col gap-1" >
     <!-- LOGO Y BOTON DE CREAR NUEVO TOPIC -->
     <div class="flex justify-center items-center gap-2 p-4">
         <img src="/assets/images/logo.png" alt="logo" class="w-14 h-14">
         <span class="text-white text-2xl font-bold">Dev Atlas</span>
     </div>
+    
+    <div class="border-b border-line mx-4"></div>
+    
+    <div class="flex flex-col p-4 gap-2">
+        <span class="text-text text-sm font-bold">Workspace Actual</span>
 
+        <div class="relative">
+            <div class="grid grid-cols-12 p-2 cursor-pointer bg-panel border border-line rounded-md hover:bg-line transition-all duration-300" (click)="onOpenWorkspace()">
+                
+                <div class="col-span-2 flex justify-center items-center">
+                <div class="size-10 bg-accent rounded-md flex justify-center items-center">
+                    <img src="/assets/icons/code.svg" alt="" class="size-5">
+                </div>
+            </div>
+            <div class="col-span-8 flex flex-col justify-center pl-2">
+                <span class="text-text text-xs font-bold">Workspace 1</span>
+                <span class="text-text text-xs font-bold">12 topics</span>
+            </div>
+            <div class="col-span-2 flex justify-center items-center">
+                <img src="/assets/icons/double-arrow.svg" alt="" class="size-4">
+            </div>
+            
+        </div>
+        @if (openWorkspace) {
+            <div class="absolute left-0 right-0 top-full z-10 mt-2 max-h-40 overflow-y-auto rounded-md border border-line bg-panel py-1">
+              <button type="button" class="block w-full px-3 py-2 text-left text-text hover:bg-line" (click)="openWorkspace = false">
+                Workspace 1
+              </button>
+              <button type="button" class="block w-full px-3 py-2 text-left text-text hover:bg-line" (click)="openWorkspace = false">
+                Workspace 2
+              </button>
+              <button type="button" class="block w-full px-3 py-2 text-left text-text hover:bg-line" (click)="openWorkspace = false">
+                Workspace 3
+              </button>
+              <button type="button" class="block w-full px-3 py-2 text-left text-text hover:bg-line" (click)="openWorkspace = false">
+                Workspace 4
+              </button>
+              <button type="button" class="block w-full px-3 py-2 text-left text-text hover:bg-line" (click)="openWorkspace = false">
+                Workspace 1
+              </button>
+              <button type="button" class="block w-full px-3 py-2 text-left text-text hover:bg-line" (click)="openWorkspace = false">
+                Workspace 2
+              </button>
+              <button type="button" class="block w-full px-3 py-2 text-left text-text hover:bg-line" (click)="openWorkspace = false">
+                Workspace 3
+              </button>
+              <button type="button" class="block w-full px-3 py-2 text-left text-text hover:bg-line" (click)="openWorkspace = false">
+                Workspace 4
+              </button>
+            </div>
+          }
+    </div>
+
+    <div>
+        <div>
+            <button type="button" class="w-full px-3 py-2 text-left text-text hover:bg-line flex items-center gap-2" (click)="openWorkspace = false">
+                <i class="pi pi-plus"></i>
+                <span class="text-text text-sm font-bold"> Nuevo workspace</span>
+            </button>
+        </div>
+    </div>
+
+    </div>
+    
+    <div class="border-b border-line mx-4"></div>
+    
     <div class="flex justify-center items-center w-full px-4">
         <button class="bg-accent text-white text-sm px-4 py-2 rounded-md w-full hover:bg-accent/80 transition-all duration-300 cursor-pointer" (click)="onCreateTopic()">
             Crear nuevo topic
@@ -12,7 +77,6 @@
     </div>
 
     <!-- SEPARADOR -->
-    <div class="border-b border-line my-4 mx-4"></div>
 
     <!-- LISTA DE TOPICS -->
     <div class="flex flex-col p-4">

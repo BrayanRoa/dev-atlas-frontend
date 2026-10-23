@@ -9,6 +9,8 @@ import { TopicDialogService } from '../../../topics/services/topic-dialog.servic
 })
 export class SidebarComponent {
 
+  openWorkspace: boolean = false;
+
   private readonly topicDialogService = inject(TopicDialogService);
 
   /**
@@ -17,4 +19,12 @@ export class SidebarComponent {
   onCreateTopic(): void {
     this.topicDialogService.show('create', 'Crear nuevo topic');
   }
+
+  /**
+   * Abre el modal para crear un nuevo workspace
+   */
+  onOpenWorkspace(): void {
+    this.openWorkspace = !this.openWorkspace;
+  }
+  
 }
