@@ -10,7 +10,7 @@ import { routes } from './app.routes';
 // PrimeNG imports
 import { providePrimeNG } from 'primeng/config';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import Aura from '@primeuix/themes/aura';
+import Lara from '@primeuix/themes/lara';
 import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
@@ -25,10 +25,10 @@ export const appConfig: ApplicationConfig = {
     // PrimeNG configuration
     providePrimeNG({
       theme: {
-        preset: Aura,
+        preset: Lara,
         options: {
           prefix: 'p',
-          darkModeSelector: true,
+          darkModeSelector: '.app-dark',
           cssLayer: false,
         },
       },

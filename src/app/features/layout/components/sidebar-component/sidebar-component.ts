@@ -1,9 +1,10 @@
 import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { TopicDialogService } from '../../../topics/services/topic-dialog.service';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-sidebar-component',
-  imports: [],
+  imports: [ButtonModule],
   templateUrl: './sidebar-component.html',
   styleUrl: './sidebar-component.css',
 })

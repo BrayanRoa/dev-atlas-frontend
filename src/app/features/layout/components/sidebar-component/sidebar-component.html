@@ -28,7 +28,7 @@
             
         </div>
         @if (openWorkspace) {
-            <div class="absolute left-0 right-0 top-full z-10 mt-2 max-h-40 overflow-y-auto rounded-md border border-line bg-panel py-1">
+            <div class="absolute left-0 right-0 top-full z-10 mt-2 max-h-40 overflow-y-auto rounded-md border border-line bg-raised py-1">
               <button type="button" class="block w-full px-3 py-2 text-left text-text hover:bg-line" (click)="openWorkspace = false">
                 Workspace 1
               </button>
@@ -71,9 +71,7 @@
     <div class="border-b border-line mx-4"></div>
     
     <div class="flex justify-center items-center w-full px-4">
-        <button class="bg-accent text-white text-sm px-4 py-2 rounded-md w-full hover:bg-accent/80 transition-all duration-300 cursor-pointer" (click)="onCreateTopic()">
-            Crear nuevo topic
-        </button>
+        <p-button label="Crear nuevo topic" icon="pi pi-plus" (click)="onCreateTopic()" />
     </div>
 
     <!-- SEPARADOR -->

@@ -3,7 +3,10 @@ import { Component, inject } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { TopicDialogService } from '../../services/topic-dialog.service';
 import { SelectModule } from 'primeng/select';
+import { InputTextModule } from 'primeng/inputtext';
+import { IftaLabelModule } from 'primeng/iftalabel';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
 
 interface Icon {
   name: string;
@@ -17,7 +20,7 @@ interface Tag {
 
 @Component({
   selector: 'app-create-edit-modal',
-  imports: [DialogModule, SelectModule, ReactiveFormsModule],
+  imports: [DialogModule, SelectModule, InputTextModule, IftaLabelModule, ReactiveFormsModule, ButtonModule],
   templateUrl: './create-edit-modal.html',
   styleUrl: './create-edit-modal.css',
 })

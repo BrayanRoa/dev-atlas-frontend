@@ -5,7 +5,6 @@
   draggable="false"
   [visible]="topicDialogService.open()"
   (visibleChange)="topicDialogService.close()"
-  styleClass=" !bg-main border-none"
   [style]="{ width: '500px' }"
 >
   <!-- header -->
@@ -21,30 +20,29 @@
    <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
      <div class="flex flex-col gap-4">
-       <div class="flex flex-col gap-1 w-full">
-      <label for="name" class="text-sm font-medium text-text">Name</label>
+       <p-iftalabel>
       <input
         type="text"
         id="name"
         formControlName="name"
-        class="w-full p-2 border border-gray-300 rounded-md text-text"
+        pInputText
+        [fluid]="true"
       />
-    </div>
-    
-    <div class="flex flex-col gap-1 w-full">
-      <label for="description" class="text-sm font-medium text-text"
-        >Description</label
-      >
+      <label for="name">Name</label>
+    </p-iftalabel>
+
+    <p-iftalabel>
       <input
         type="text"
         id="description"
         formControlName="description"
-        class="w-full p-2 border border-gray-300 rounded-md text-text"
+        pInputText
+        [fluid]="true"
       />
-    </div>
-    
-    <div class="flex flex-col gap-1 w-full">
-      <label for="icon" class="text-sm font-medium text-text">Icono</label>
+      <label for="description">Description</label>
+    </p-iftalabel>
+
+    <p-iftalabel>
       <p-select
         inputId="icon"
         appendTo="body"
@@ -56,7 +54,6 @@
         filterBy="name"
         [showClear]="true"
         placeholder="Selecciona un icono"
-        class="w-full !bg-main"
       >
         <ng-template #selectedItem let-selectedOption>
           <div class="flex items-center gap-2">
@@ -65,7 +62,7 @@
               [alt]="selectedOption.name"
               class="h-4 w-4"
             />
-            <div class="text-text">{{ selectedOption.name }}</div>
+            <div>{{ selectedOption.name }}</div>
           </div>
         </ng-template>
         <ng-template #item let-icon>
@@ -79,10 +76,10 @@
           </div>
         </ng-template>
       </p-select>
-    </div>
+      <label for="icon">Icono</label>
+    </p-iftalabel>
 
-    <div class="flex flex-col gap-1 w-full">
-      <label for="tags" class="text-sm font-medium text-text">Tags</label>
+    <p-iftalabel>
       <p-select
         inputId="tags"
         appendTo="body"
@@ -94,34 +91,35 @@
         filterBy="name"
         [showClear]="true"
         placeholder="Selecciona un tag"
-        class="w-full !bg-main"
       >
         <ng-template #selectedItem let-selectedOption>
-          <div class="text-text">{{ selectedOption.name }}</div>
+          <div>{{ selectedOption.name }}</div>
         </ng-template>
         <ng-template #item let-tag>
           <div>{{ tag.name }}</div>
         </ng-template>
       </p-select>
-    </div>
+      <label for="tags">Tags</label>
+    </p-iftalabel>
   </div>
 </form>
 
 <ng-template #footer>
   <div class="flex justify-end gap-2">
-    <button 
+    <p-button 
       type="submit" 
-      class="bg-line text-text px-4 py-2 rounded-md" 
+      label="Guardar"
+      icon="pi pi-save"
       [disabled]="form.invalid"
       (click)="onSubmit()">
-      Guardar
-    </button>
-    <button 
+    </p-button>
+    <p-button 
       type="button" 
-      class="bg-line text-text px-4 py-2 rounded-md"
+      label="Cancelar"
+      icon="pi pi-times"
+      severity="danger"
       (click)="onCancel()">
-      Cancelar
-    </button>
+    </p-button>
   </div>
 </ng-template>
   

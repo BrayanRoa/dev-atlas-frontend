@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 
 import { InputTextModule } from 'primeng/inputtext';
+import { IftaLabelModule } from 'primeng/iftalabel';
 import { ButtonModule } from 'primeng/button';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService, LoginResult } from '../../services/auth.service';
@@ -14,6 +15,7 @@ import { MessageService } from 'primeng/api';
   selector: 'app-login',
   imports: [
     InputTextModule,
+    IftaLabelModule,
     ButtonModule,
     ReactiveFormsModule,
     ProgressSpinnerModule,
