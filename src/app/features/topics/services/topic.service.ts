@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
-import { ITopicCreatePayload, ITopicCreateResponse } from '../interfaces/topics.interfaces';
+import { ITopicCreatePayload, ITopicCreateResponse, ITopicListResponse } from '../../../shared/interfaces/topics.interfaces';
 
 
 @Injectable({
@@ -20,5 +20,9 @@ export class TopicService {
    */
   createTopic(topic: ITopicCreatePayload): Observable<ITopicCreateResponse> {
     return this.http.post<ITopicCreateResponse>(`${this.baseUrl}`, topic);
+  }
+
+  getAllTopics(workspaceId: string): Observable<ITopicListResponse> {
+    return this.http.get<ITopicListResponse>(`${this.baseUrl}?workSpaceId=${workspaceId}`);
   }
 }

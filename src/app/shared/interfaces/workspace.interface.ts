@@ -1,3 +1,5 @@
+import { IBaseResponse } from './base.response';
+
 export interface IWorkspace {
   id: string;
   name: string;
@@ -11,12 +13,6 @@ export interface IWorkspaceCreateRequest {
   name: string;
 }
 
-export interface IWorkspaceCreateResponse {
-  message: string;
-  data: IWorkspace;
-}
+export interface IWorkspaceCreateResponse extends IBaseResponse<IWorkspace> {}
 
-export interface IWorkspaceListResponse {
-  message: string;
-  data: IWorkspace[];
-}
+export interface IWorkspaceListResponse extends IBaseResponse<IWorkspace[]> {}

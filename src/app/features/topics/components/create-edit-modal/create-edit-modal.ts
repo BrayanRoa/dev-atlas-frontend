@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 
 import { DialogModule } from 'primeng/dialog';
 import { TopicDialogService } from '../../services/topic-dialog.service';
@@ -9,7 +9,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ButtonModule } from 'primeng/button';
 import { WorkSpaceService } from '../../../workspaces/services/work-space.service';
 import { TopicService } from '../../services/topic.service';
-import { ITopicCreatePayload } from '../../interfaces/topics.interfaces';
+import { ITopicCreatePayload } from '../../../../shared/interfaces/topics.interfaces';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 
@@ -45,6 +45,8 @@ export class CreateEditModal {
   readonly workSpaceService = inject(WorkSpaceService);
   readonly topicService = inject(TopicService);
   readonly messageService = inject(MessageService);
+
+  @Output() created = new EventEmitter<void>();
 
   // Variables de estado
   icons: IIcon[] = [];
@@ -112,6 +114,7 @@ export class CreateEditModal {
     this.topicService.createTopic(topic).subscribe({
       next: (response) => {
         this.createTopicMessage(response.data.title);
+        this.created.emit();
         this.closeDialog();
       },
       error: (error) => {

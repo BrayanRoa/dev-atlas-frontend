@@ -54,7 +54,7 @@ export class RegisterComponent implements OnInit {
       error: (error) => {
         setTimeout(()=>{
           this.loading = false;
-          if(error.error.message.includes("User already exists")){
+          if(error?.error?.message?.includes('User already exists')){
             this.messageService.add({severity: 'error', summary: 'Error', detail: 'El correo electrónico ya está registrado'});
           }else{
             this.messageService.add({severity: 'error', summary: 'Error', detail: 'Error al registrar usuario'});

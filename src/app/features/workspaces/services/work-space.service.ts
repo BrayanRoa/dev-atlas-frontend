@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { IWorkspace, IWorkspaceCreateRequest, IWorkspaceCreateResponse, IWorkspaceListResponse } from '../interfaces/workspace.interface';
+import { IWorkspace, IWorkspaceCreateRequest, IWorkspaceCreateResponse, IWorkspaceListResponse } from '../../../shared/interfaces/workspace.interface';
 
 @Injectable({
   providedIn: 'root',

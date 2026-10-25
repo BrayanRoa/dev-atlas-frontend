@@ -27,7 +27,7 @@
         </div>
         <div class="col-span-8 flex flex-col justify-center pl-2">
           <span class="text-text text-xs font-bold">{{ workspaceSelected?.name | titlecase }}</span>
-          <span class="text-text text-xs font-bold">12 topics</span>
+          <span class="text-text text-xs font-bold">{{ workspaces.length }} topics</span>
         </div>
         <div class="col-span-2 flex justify-center items-center">
           <img src="/assets/icons/double-arrow.svg" alt="" class="size-4" />
@@ -77,22 +77,23 @@
     </div>
 
     <div class="flex min-h-0 flex-1 flex-col gap-1 w-full overflow-y-auto">
-      @for (topic of [1,2,3,4,5,6,7,8,9,10,11,12]; track $index) {
+      @for (topic of topics; track $index) {
         <div class="flex justify-start items-center w-full gap-2 cursor-pointer hover:bg-line rounded-md p-2 transition-all duration-300">
           <img src="/assets/icons/code.svg" alt="" class="size-5" />
-          <span class="text-text text-sm font-bold">Topic {{ $index + 1 }}</span>
+          <span class="text-text text-sm font-bold">{{ topic.title | titlecase }}</span>
         </div>
       }
     </div>
   </div>
 </div>
 
-<!-- MODAL DE CREACION DE NUEVO WORKSPACE -->
-<app-form-workspace-component 
+<app-form-workspace-component
   [(visible)]="createNewWorkspaceModal"
-  (onCancelEvent)="onCloseCreateNewWorkspaceModal()" 
+  (onCancelEvent)="onCloseCreateNewWorkspaceModal()"
   (onSubmitEvent)="onSubmitCreateNewWorkspaceModal($event)"
 />
+
+<app-create-edit-modal (created)="onTopicCreated()" />
 
 <!-- TOAST -->
 <p-toast />

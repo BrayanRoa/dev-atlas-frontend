@@ -4,7 +4,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { IftaLabelModule } from 'primeng/iftalabel';
 import { ButtonModule } from 'primeng/button';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService, LoginResult } from '../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
@@ -52,31 +52,21 @@ export class LoginComponent implements OnInit{
   onLogin(){
     this.loading = true;
     this.authService.login(this.loginForm.value).subscribe({
-      next: (response:LoginResult) => {
-        this.handleLoginResult(response);
+      next: () => {
+        setTimeout(() => {
+          this.loading = false;
+          this.router.navigate(['/dashboard/topics']);
+        }, 2000);
+      },
+      error: (error) => {
+        setTimeout(() => {
+          this.loading = false;
+          const detail = error?.status === 400
+            ? 'Credenciales incorrectas'
+            : 'Error al iniciar sesión - Contacta con el administrador';
+          this.messageService.add({ severity: 'error', summary: 'Error', detail });
+        }, 2000);
       },
     });
-  }
-
-  private handleLoginResult(result: LoginResult): void {
-    if(result === "success"){
-      setTimeout(() => {
-        this.loading = false;
-        this.router.navigate(['/dashboard/topics']);
-      }, 2000);
-    }else if(result === "invalid"){
-      setTimeout(() => {
-        this.loading = false;
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Credenciales incorrectas' });
-      }, 2000);
-    }else{
-      setTimeout(() => {
-        this.loading = false;
-        this.messageService.add({ 
-          severity: 'error', 
-          summary: 'Error', 
-          detail: 'Error al iniciar sesión - Contacta con el administrador' });
-      }, 2000);
-    }
   }
 }
