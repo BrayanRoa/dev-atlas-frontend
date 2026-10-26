@@ -10,7 +10,7 @@ export const LayoutRoutes: Routes = [
                 loadComponent: () => import("../topics/pages/topic-empty/topic-empty").then(m => m.TopicEmpty),
             },
             {
-                path: 'topics/:id',
+                path: 'topic/:id',
                 loadComponent: () => import("../topics/pages/topic-detail/topic-detail").then(m => m.TopicDetail),
             },
             {

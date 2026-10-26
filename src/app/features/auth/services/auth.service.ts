@@ -15,8 +15,9 @@ export class AuthService {
   private readonly http = inject(HttpClient);
 
 
-  private saveToken(token: string): void {
+  private saveToken(token: string, name: string, lastname:string): void {
     localStorage.setItem(this.tokenKey, token);
+    localStorage.setItem("user_name", name + " " + lastname);
   }
 
   hasToken(): boolean {
@@ -26,7 +27,7 @@ export class AuthService {
   register(registerRequest: IRegisterPayload): Observable<IRegisterSuccessResponse> {
     return this.http.post<IRegisterSuccessResponse>(`${this.apiUrl}/register`, registerRequest).pipe(
       tap((response) => {
-        this.saveToken(response.access_token);
+        this.saveToken(response.access_token, response.data.firstName, response.data.lastName!);
         this._userInformation = response.data;
       }),
     );
@@ -35,7 +36,7 @@ export class AuthService {
   login(loginRequest: ILoginPayload): Observable<ILoginSuccessResponse> {
     return this.http.post<ILoginSuccessResponse>(`${this.apiUrl}/login`, loginRequest).pipe(
       tap((response) => {
-        this.saveToken(response.access_token);
+        this.saveToken(response.access_token, response.data.firstName, response.data.lastName!);
         this._userInformation = response.data;
       }),
     );

@@ -43,10 +43,10 @@ export class HeaderComponent {
   }
 
   get userInformation() {
-    const user = this.authService.userInformation;
-    if (!user) {
-      return '';
+    const userName = localStorage.getItem("user_name");
+    if (userName) {
+      return userName;
     }
-    return [user.firstName, user.lastName].filter(Boolean).join(' ');
+    return 'Usuario';
   }
 }

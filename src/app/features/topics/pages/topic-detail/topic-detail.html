@@ -7,13 +7,13 @@
         <div class="col-span-10 flex gap-4">
             <!-- IMAGEN DEL TOPIC -->
             <div class="w-20 h-20">
-                <img src="https://via.placeholder.com/150" alt="Imagen del topic" class="w-full h-full object-cover rounded-md">
+                <img [src]="getIconPath(topicService.currentTopic?.icon ?? 'default-topic.png')" alt="Imagen del topic" class="w-full h-full object-cover rounded-md">
             </div>
     
             <!-- TITULO DEL TOPIC E INFORMACION GENERAL -->
             <div class="flex flex-col gap-1">
-                <h1 class="text-text font-bold text-2xl">Titulo del topic</h1>
-                <p class="text-text text-sm">Descripcion del topic</p>
+                <h1 class="text-text font-bold text-2xl">{{ topicService.currentTopic?.title | titlecase }}</h1>
+                <p class="text-text text-sm">{{ topicService.currentTopic?.description | titlecase }}</p>
     
                 <div class="flex gap-2">
                     @for (tag of tags; track $index) {

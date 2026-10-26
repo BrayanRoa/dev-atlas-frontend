@@ -26,8 +26,12 @@
           </div>
         </div>
         <div class="col-span-8 flex flex-col justify-center pl-2">
-          <span class="text-text text-xs font-bold">{{ workspaceSelected?.name | titlecase }}</span>
-          <span class="text-text text-xs font-bold">{{ workspaces.length }} topics</span>
+          <span class="text-text text-xs font-bold"
+            >{{ workspaceSelected?.name | titlecase }}</span
+          >
+          <span class="text-text text-xs font-bold"
+            >{{ workspaces.length }} topics</span
+          >
         </div>
         <div class="col-span-2 flex justify-center items-center">
           <img src="/assets/icons/double-arrow.svg" alt="" class="size-4" />
@@ -38,10 +42,15 @@
         class="absolute left-0 right-0 top-full z-10 mt-2 max-h-40 overflow-y-auto rounded-md border border-line bg-raised py-1"
       >
         @for (workspace of workspaces; track $index) {
-          <div class="flex justify-start items-center w-full gap-2 cursor-pointer hover:bg-line rounded-md p-2 transition-all duration-300" (click)="onSelectWorkspace(workspace)">
-            <img src="/assets/icons/code.svg" alt="" class="size-5" />
-            <span class="text-text text-sm font-bold">{{ workspace.name | titlecase }}</span>
-          </div>
+        <div
+          class="flex justify-start items-center w-full gap-2 cursor-pointer hover:bg-line rounded-md p-2 transition-all duration-300"
+          (click)="onSelectWorkspace(workspace)"
+        >
+          <img src="/assets/icons/code.svg" alt="" class="size-5" />
+          <span class="text-text text-sm font-bold"
+            >{{ workspace.name | titlecase }}</span
+          >
+        </div>
         }
       </div>
       }
@@ -63,7 +72,6 @@
 
   <!-- TOPICS -->
   <div class="flex min-h-0 flex-1 flex-col items-center w-full p-4 gap-4">
-
     <div class="flex shrink-0 justify-between items-center w-full">
       <span class="text-text text-sm font-bold">MIS TOPICS</span>
       <p-button
@@ -76,14 +84,34 @@
       />
     </div>
 
+    @if (topics.length > 0) {
+
     <div class="flex min-h-0 flex-1 flex-col gap-1 w-full overflow-y-auto">
       @for (topic of topics; track $index) {
-        <div class="flex justify-start items-center w-full gap-2 cursor-pointer hover:bg-line rounded-md p-2 transition-all duration-300">
-          <img src="/assets/icons/code.svg" alt="" class="size-5" />
-          <span class="text-text text-sm font-bold">{{ topic.title | titlecase }}</span>
-        </div>
+      <a
+        class="flex justify-start items-center w-full gap-2 cursor-pointer hover:bg-line rounded-md p-2 transition-all duration-300"
+        (click)="onSelectTopic(topic)"
+        [routerLink]="['/dashboard/topic', topic.id]"
+        [routerLinkActive]="'bg-line'"
+      >
+        @if (topicSelected?.id === topic.id) {
+        <img src="/assets/icons/gray-open-folder.svg" alt="" class="size-5" />
+        }@else {
+        <img src="/assets/icons/gray-folder.svg" alt="" class="size-5" />
+        }
+        <span class="text-text text-sm font-bold"
+          >{{ topic.title | titlecase }}</span
+        >
+      </a>
       }
     </div>
+    }@else {
+    <div
+      class="flex justify-center items-center min-h-0 flex-1 flex-col gap-1 w-full overflow-y-auto"
+    >
+      <span class="text-text text-sm font-bold">No hay topics</span>
+    </div>
+    }
   </div>
 </div>
 
