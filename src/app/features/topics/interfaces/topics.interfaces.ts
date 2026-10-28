@@ -1,6 +1,5 @@
-import { IBaseResponse } from "./base.response";
+import { IBaseResponse } from '../../../shared/interfaces/base.response';
 
-// Create Topic Payload
 export interface ITopicCreatePayload {
   title: string;
   description: string;
@@ -10,7 +9,6 @@ export interface ITopicCreatePayload {
   workSpaceId: string;
 }
 
-// Topic Interface
 export interface ITopic {
   id: string;
   parentId: string | null;
@@ -25,9 +23,6 @@ export interface ITopic {
   workSpaceId: string;
 }
 
-
-// Create Topic Response
 export interface ITopicCreateResponse extends IBaseResponse<ITopic> {}
 
-// List Topics Response
 export interface ITopicListResponse extends IBaseResponse<ITopic[]> {}

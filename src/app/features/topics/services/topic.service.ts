@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
-import { ITopic, ITopicCreatePayload, ITopicCreateResponse, ITopicListResponse } from '../../../shared/interfaces/topics.interfaces';
+import { ITopic, ITopicCreatePayload, ITopicCreateResponse, ITopicListResponse } from '../interfaces/topics.interfaces';
 
 
 @Injectable({

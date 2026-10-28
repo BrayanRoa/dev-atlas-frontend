@@ -11,8 +11,8 @@ import { TopicService } from '../../../topics/services/topic.service';
 import { CreateEditModal } from '../../../topics/components/create-edit-modal/create-edit-modal';
 import { FormWorkspaceComponent } from '../../../workspaces/components/form-workspace-component/form-workspace-component';
 import { WorkSpaceService } from '../../../workspaces/services/work-space.service';
-import { ITopic } from '../../../../shared/interfaces/topics.interfaces';
-import { IWorkspace, IWorkspaceCreateRequest } from '../../../../shared/interfaces/workspace.interface';
+import { ITopic } from '../../../topics/interfaces/topics.interfaces';
+import { IWorkspace, IWorkspaceCreateRequest } from '../../../workspaces/interfaces/workspace.interface';
 
 @Component({
   selector: 'app-sidebar-component',
@@ -49,6 +49,11 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadWorkspaces();
+  }
+
+  /** Abre la página de tags del workspace. El botón de crear un tag vive ahí. */
+  onOpenTags(): void {
+    this.router.navigate(['/dashboard/tags']);
   }
 
   // Workspaces: abrir la lista y elegir uno
@@ -132,7 +137,10 @@ export class SidebarComponent implements OnInit {
 
   private loadWorkspaces(): void {
     this.workSpaceService.getWorkspaces().subscribe({
-      next: (response) => this.onWorkspacesLoaded(response.data),
+      next: (response) => {
+        this.onWorkspacesLoaded(response.data);
+        this.workSpaceService.workspaces = response.data;
+      },
       error: (error) => console.error(error),
     });
   }

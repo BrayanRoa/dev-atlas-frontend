@@ -1,0 +1,94 @@
+<p-dialog
+  [visible]="visible"
+  (visibleChange)="visibleChange.emit($event)"
+  [modal]="true"
+  [style]="{ width: '32rem' }"
+>
+  <ng-template #header>
+    <div class="inline-flex items-center justify-center gap-2">
+      <span class="font-bold whitespace-nowrap">Crear nuevo tag</span>
+    </div>
+  </ng-template>
+
+  <ng-template #content>
+    <form
+      action=""
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4"
+    >
+      <!-- NOMBRE DEL TAG -->
+      <p-iftalabel>
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          pInputText
+          [fluid]="true"
+        />
+        <label for="name">Nombre</label>
+      </p-iftalabel>
+
+      <!-- WORKSPACE -->
+      <p-select
+        formControlName="workSpaceId"
+        [options]="workspaces"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecciona un workspace"
+        [fluid]="true"
+      />
+
+      <!-- COLOR DEL TAG -->
+      <div class="flex flex-col gap-2">
+        <span class="text-sm font-bold text-text">Color</span>
+        <div
+          class="flex flex-wrap items-center justify-center gap-3 rounded-md bg-panel p-4"
+        >
+          @for (color of colors; track color.value) {
+          <div
+            (click)="onSelectColor(color.value)"
+            class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border border-line"
+            [ngClass]="color.value"
+            [class.ring-2]="isSelected(color.value)"
+            [class.ring-text]="isSelected(color.value)"
+            [class.ring-offset-2]="isSelected(color.value)"
+            [class.ring-offset-panel]="isSelected(color.value)"
+          >
+            @if (isSelected(color.value)) {
+            <span
+              class="flex size-5 items-center justify-center rounded-full bg-main"
+            >
+              <i class="pi pi-check text-xs text-text"></i>
+            </span>
+            }
+          </div>
+          }
+        </div>
+      </div>
+    </form>
+  </ng-template>
+  <ng-template #footer>
+    <div class="flex justify-end gap-2">
+      <p-button
+        type="button"
+        label="Guardar"
+        icon="pi pi-save"
+        severity="primary"
+        [disabled]="form.invalid"
+        (click)="onSubmit()"
+      >
+      </p-button>
+    </div>
+    <div class="flex justify-end gap-2">
+      <p-button
+        type="button"
+        label="Cancelar"
+        icon="pi pi-times"
+        severity="danger"
+        (click)="onCancel()"
+      >
+      </p-button>
+    </div>
+  </ng-template>
+</p-dialog>

@@ -9,7 +9,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ButtonModule } from 'primeng/button';
 import { WorkSpaceService } from '../../../workspaces/services/work-space.service';
 import { TopicService } from '../../services/topic.service';
-import { ITopicCreatePayload } from '../../../../shared/interfaces/topics.interfaces';
+import { ITopicCreatePayload } from '../../interfaces/topics.interfaces';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 

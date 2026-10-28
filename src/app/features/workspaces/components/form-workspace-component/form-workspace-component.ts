@@ -5,7 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { IftaLabelModule } from 'primeng/iftalabel';
 import { InputTextModule } from 'primeng/inputtext';
-import { IWorkspaceCreateRequest } from '../../../../shared/interfaces/workspace.interface';
+import { IWorkspaceCreateRequest } from '../../interfaces/workspace.interface';
 
 @Component({
   selector: 'app-form-workspace-component',

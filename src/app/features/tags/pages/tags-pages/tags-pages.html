@@ -1,1 +1,30 @@
-<p>tags-pages works!</p>
+<div class="flex flex-col gap-4">
+  
+  <div class="flex w-full justify-between items-center gap-4 rounded-md bg-panel p-4">
+    <span class="text-sm font-bold text-text">TAGS</span>
+  
+    <p-button label="Agregar tag" icon="pi pi-plus" (click)="openModal()" />
+  </div>
+  
+  
+  <div class="flex flex-col gap-4 bg-panel p-4 rounded-md">
+    @for (workspace of allWorkspacesWithTags(); track $index) {
+      <div class="flex flex-col gap-2">
+        <span class="text-sm font-bold text-text bord">{{ workspace.name | titlecase }}</span>
+        <div class="flex flex-wrap gap-2">
+          @for (tag of workspace.tags; track $index) {
+            <span class="text-sm font-bold text-black rounded-md p-2" [class]="tag.color">{{ tag.name | titlecase }}</span>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+</div>
+
+<app-create-edit-tag-component
+  [(visible)]="visibleModal"
+  (onSubmitEvent)="onCreateTag($event)"
+/>
+
+<p-toast />

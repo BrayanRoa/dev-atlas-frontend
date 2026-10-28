@@ -1,4 +1,5 @@
-import { IBaseResponse } from './base.response';
+import { IBaseResponse } from '../../../shared/interfaces/base.response';
+import { ITag } from '../../tags/interfaces/tag.interface';
 
 export interface IWorkspace {
   id: string;
@@ -7,6 +8,7 @@ export interface IWorkspace {
   updatedAt: Date;
   userId?: string;
   deletedAt?: Date | null;
+  tags?: ITag[];
 }
 
 export interface IWorkspaceCreateRequest {
