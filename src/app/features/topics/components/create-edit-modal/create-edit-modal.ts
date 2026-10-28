@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, effect, EventEmitter, inject, Output } from '@angular/core';
 
 import { DialogModule } from 'primeng/dialog';
 import { TopicDialogService } from '../../services/topic-dialog.service';
@@ -12,14 +12,17 @@ import { TopicService } from '../../services/topic.service';
 import { ITopicCreatePayload } from '../../interfaces/topics.interfaces';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { TagsService } from '../../../tags/services/tags.service';
+import { ITag } from '../../../tags/interfaces/tag.interface';
 
 interface IIcon {
   name: string;
   icon: string;
 }
 
-interface ITag {
-  name: string;
+interface ISelectTag {
+  label: string;
+  value: string;
   color: string;
 }
 
@@ -45,19 +48,30 @@ export class CreateEditModal {
   readonly workSpaceService = inject(WorkSpaceService);
   readonly topicService = inject(TopicService);
   readonly messageService = inject(MessageService);
+  readonly tagsService = inject(TagsService);
 
   @Output() created = new EventEmitter<void>();
 
   // Variables de estado
   icons: IIcon[] = [];
-  tags: ITag[] = [];
+  tags: ISelectTag[] = [];
 
   // Formulario
   form!: FormGroup;
 
+  constructor(){
+    effect(()=>{
+      if(this.topicDialogService.open()){
+        this.loadTags();
+      }
+    })
+  }
+
+  /**
+   * Inicializa el formulario
+   */
   ngOnInit(): void {
     this.buildForm()
-
     this.icons = [
       { name: 'Angular', icon: 'angular.png' },
       { name: 'AWS', icon: 'aws.png' },
@@ -66,23 +80,16 @@ export class CreateEditModal {
       { name: 'Postgres', icon: 'postgres.png' },
       { name: 'Typescript', icon: 'typescript.png' },
     ];
-
-    this.tags = [
-      { name: 'Tag 1', color: 'primary' },
-      { name: 'Tag 2', color: 'secondary' },
-      { name: 'Tag 3', color: 'success' },
-      { name: 'Tag 4', color: 'info' },
-      { name: 'Tag 5', color: 'warning' },
-      { name: 'Tag 6', color: 'danger' },
-    ];
   }
+
+
 
   private buildForm(): void {
     this.form = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.minLength(3)]),
       description: new FormControl('', [Validators.required, Validators.minLength(10)]),
-      icon: new FormControl<IIcon | null>(null, [Validators.required]),
-      tags: new FormControl<ITag | null>(null, [Validators.required]),
+      icon: new FormControl<string | null>(null, [Validators.required]),
+      tags: new FormControl<string[] | null>([], [Validators.required]),
     })
   }
 
@@ -151,6 +158,27 @@ export class CreateEditModal {
       severity: 'error',
       summary: 'Error',
       detail: message === 'Topic with this title already exists' ? 'El topic ya existe para este workspace' : 'Ocurrió un error al crear el topic',
+    });
+  }
+
+  loadTags(): void {
+    const workSpaceId = this.workSpaceService.currentWorkspace?.id ?? '';
+    if (!workSpaceId) {
+      console.error("No se encontró el workspace");
+      return;
+    }
+    this.tagsService.getTags(workSpaceId).subscribe({
+      next: (response) => {
+        console.log("response.data", response.data);
+        this.tags = response.data.map((tag: ITag)=>({
+          label: tag.name,
+          value: tag.id,
+          color: tag.color,
+        }));
+      },
+      error: (error) => {
+        console.error(error);
+      }
     });
   }
 }

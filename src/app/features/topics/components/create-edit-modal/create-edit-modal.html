@@ -28,7 +28,7 @@
         pInputText
         [fluid]="true"
       />
-      <label for="name">Name</label>
+      <label for="name">Nombre</label>
     </p-iftalabel>
 
     <p-iftalabel>
@@ -84,19 +84,26 @@
         inputId="tags"
         appendTo="body"
         fluid="true"
-        [options]="tags"
         formControlName="tags"
-        optionLabel="name"
+        optionLabel="label"
+        optionValue="value"
+        filterBy="label"
         [filter]="true"
-        filterBy="name"
+        [options]="tags"
         [showClear]="true"
         placeholder="Selecciona un tag"
       >
         <ng-template #selectedItem let-selectedOption>
-          <div>{{ selectedOption.name }}</div>
+          <div class="flex items-center rounded-md gap-2" [style]="{ backgroundColor: selectedOption.color }">
+            <div class="w-2 h-2 rounded-full" [class]="selectedOption.color"></div>
+            <div class="text-white">{{ selectedOption.label }}</div>
+          </div>
         </ng-template>
         <ng-template #item let-tag>
-          <div>{{ tag.name }}</div>
+          <div class="flex items-center rounded-md gap-2" [style]="{ backgroundColor: tag.color }">
+            <div class="w-2 h-2 rounded-full" [class]="tag.color"></div>
+            <div class="text-white">{{ tag.label }}</div>
+          </div>
         </ng-template>
       </p-select>
       <label for="tags">Tags</label>

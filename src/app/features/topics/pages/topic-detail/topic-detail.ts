@@ -15,7 +15,6 @@ export class TopicDetail {
   tags: string[] = ['tag1', 'tag2', 'tag3'];
 
   ngOnInit(): void {
-    console.log('topicService.currentTopic', this.topicService.currentTopic);
   }
 
   getIconPath(icon: string): string {
