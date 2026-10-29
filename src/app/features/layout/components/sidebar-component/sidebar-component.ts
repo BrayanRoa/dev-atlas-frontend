@@ -11,7 +11,7 @@ import { TopicService } from '../../../topics/services/topic.service';
 import { CreateEditModal } from '../../../topics/components/create-edit-modal/create-edit-modal';
 import { FormWorkspaceComponent } from '../../../workspaces/components/form-workspace-component/form-workspace-component';
 import { WorkSpaceService } from '../../../workspaces/services/work-space.service';
-import { ITopic } from '../../../topics/interfaces/topics.interfaces';
+import { ITopic, ITopicListItem } from '../../../topics/interfaces/topics.interfaces';
 import { IWorkspace, IWorkspaceCreateRequest } from '../../../workspaces/interfaces/workspace.interface';
 
 @Component({
@@ -38,8 +38,8 @@ export class SidebarComponent implements OnInit {
   // Datos que pinta la plantilla
   workspaces: IWorkspace[] = [];
   workspaceSelected: IWorkspace | null = null;
-  topics: ITopic[] = [];
-  topicSelected: ITopic | null = null;
+  topics: ITopicListItem[] = [];
+  topicSelected: ITopicListItem | null = null;
 
   private readonly topicDialogService = inject(TopicDialogService);
   private readonly workSpaceService = inject(WorkSpaceService);
@@ -119,7 +119,7 @@ export class SidebarComponent implements OnInit {
     this.topicDialogService.show('create', 'Crear nuevo topic');
   }
 
-  onSelectTopic(topic: ITopic): void {
+  onSelectTopic(topic: ITopicListItem): void {
     this.applyTopic(topic);
   }
 
@@ -179,13 +179,20 @@ export class SidebarComponent implements OnInit {
     });
   }
 
-  private onTopicsLoaded(topics: ITopic[]): void {
+  private onTopicsLoaded(topics: ITopicListItem[]): void {
+    console.log({topics});
+    if(!topics.length) {
+      console.log('no hay topics');
+      this.router.navigate(['/dashboard/topic/empty']);
+      return
+    }
+    console.log('hay topics');
     this.topics = topics;
     this.applyTopic(topics[0] ?? null);
     this.router.navigate(['/dashboard/topic', this.topicSelected?.id ?? '']);
   }
 
-  private applyTopic(topic: ITopic | null): void {
+  private applyTopic(topic: ITopicListItem | null): void {
     this.topicSelected = topic;
     this.topicService.currentTopic = topic;
   }

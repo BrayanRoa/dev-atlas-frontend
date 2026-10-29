@@ -6,7 +6,7 @@ export const LayoutRoutes: Routes = [
         loadComponent: () => import("./pages/layout-pages/layout-pages").then(m => m.LayoutPages),
         children: [
             {
-                path: 'topics',
+                path: 'topic/empty',
                 loadComponent: () => import("../topics/pages/topic-empty/topic-empty").then(m => m.TopicEmpty),
             },
             {

@@ -80,10 +80,10 @@
     </p-iftalabel>
 
     <p-iftalabel>
-      <p-select
+      <p-multiselect
         inputId="tags"
         appendTo="body"
-        fluid="true"
+        [fluid]="true"
         formControlName="tags"
         optionLabel="label"
         optionValue="value"
@@ -91,21 +91,25 @@
         [filter]="true"
         [options]="tags"
         [showClear]="true"
-        placeholder="Selecciona un tag"
+        placeholder="Selecciona tags"
+        display="chip"
       >
-        <ng-template #selectedItem let-selectedOption>
-          <div class="flex items-center rounded-md gap-2" [style]="{ backgroundColor: selectedOption.color }">
-            <div class="w-2 h-2 rounded-full" [class]="selectedOption.color"></div>
-            <div class="text-white">{{ selectedOption.label }}</div>
-          </div>
-        </ng-template>
         <ng-template #item let-tag>
-          <div class="flex items-center rounded-md gap-2" [style]="{ backgroundColor: tag.color }">
-            <div class="w-2 h-2 rounded-full" [class]="tag.color"></div>
-            <div class="text-white">{{ tag.label }}</div>
+          <div class="flex items-center gap-2">
+            <div class="h-2 w-2 rounded-full" [ngClass]="tag.color"></div>
+            <div>{{ tag.label }}</div>
           </div>
         </ng-template>
-      </p-select>
+        <ng-template #selecteditems let-selected>
+          <div class="flex flex-wrap gap-2">
+            @for (tag of selected; track tag.value) {
+              <span class="inline-flex items-center gap-2 rounded-md px-2 py-1 text-white" [ngClass]="tag.color">
+                {{ tag.label }}
+              </span>
+            }
+          </div>
+        </ng-template>
+      </p-multiselect>
       <label for="tags">Tags</label>
     </p-iftalabel>
   </div>

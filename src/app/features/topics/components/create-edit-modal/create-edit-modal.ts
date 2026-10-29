@@ -1,8 +1,10 @@
+import { NgClass } from '@angular/common';
 import { Component, effect, EventEmitter, inject, Output } from '@angular/core';
 
 import { DialogModule } from 'primeng/dialog';
 import { TopicDialogService } from '../../services/topic-dialog.service';
 import { SelectModule } from 'primeng/select';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { InputTextModule } from 'primeng/inputtext';
 import { IftaLabelModule } from 'primeng/iftalabel';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -29,8 +31,10 @@ interface ISelectTag {
 @Component({
   selector: 'app-create-edit-modal',
   imports: [
+    NgClass,
     DialogModule, 
-    SelectModule, 
+    SelectModule,
+    MultiSelectModule, 
     InputTextModule, 
     IftaLabelModule, 
     ReactiveFormsModule, 
@@ -116,6 +120,7 @@ export class CreateEditModal {
       content: '',
       parentId: null,
       workSpaceId,
+      tags: this.form.value.tags ?? []
     };
 
     this.topicService.createTopic(topic).subscribe({

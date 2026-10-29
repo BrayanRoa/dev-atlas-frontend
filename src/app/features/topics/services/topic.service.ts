@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
-import { ITopic, ITopicCreatePayload, ITopicCreateResponse, ITopicListResponse } from '../interfaces/topics.interfaces';
+import { ITopic, ITopicCreatePayload, ITopicCreateResponse, ITopicDetailResponse, ITopicListItem, ITopicListResponse } from '../interfaces/topics.interfaces';
+import { IBaseResponse } from '../../../shared/interfaces/base.response';
 
 
 @Injectable({
@@ -13,13 +14,13 @@ export class TopicService {
   private readonly http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/topics`;
 
-  private _currentTopic: ITopic | null = null;
+  private _currentTopic: ITopicListItem | null = null;
 
-  public get currentTopic(): ITopic | null {
+  public get currentTopic(): ITopicListItem | null {
     return this._currentTopic;
   }
 
-  public set currentTopic(topic: ITopic | null) {
+  public set currentTopic(topic: ITopicListItem | null) {
     this._currentTopic = topic;
   }
 
@@ -34,5 +35,9 @@ export class TopicService {
 
   getAllTopics(workspaceId: string): Observable<ITopicListResponse> {
     return this.http.get<ITopicListResponse>(`${this.baseUrl}?workSpaceId=${workspaceId}`);
+  }
+
+  getTopic(topicId: string): Observable<ITopicDetailResponse> {
+    return this.http.get<ITopicDetailResponse>(`${this.baseUrl}/${topicId}`);
   }
 }

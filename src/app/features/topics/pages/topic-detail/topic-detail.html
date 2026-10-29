@@ -1,39 +1,46 @@
 <div class="flex justify-center items-center h-full w-full bg-panel border-2 border-line rounded-md p-4">
 
 
-    <!-- CONTENIDO PRICIPAL -->
-    <div class="flex-1 h-full w-full grid grid-cols-12 gap-4 ">
+    @if (topicDetail === null) {
+        <div class="flex justify-center items-center h-full w-full">
+            <span>No hay topic seleccionado</span>
+        </div>
+    } @else {
+        <!-- CONTENIDO PRICIPAL -->
+        <div class="flex-1 h-full w-full grid grid-cols-12 gap-4 ">
+            
+            <div class="col-span-10 flex gap-4">
+                <!-- IMAGEN DEL TOPIC -->
+                <div class="w-20 h-20">
+                    <img [src]="getIconPath(topicDetail.icon)" alt="Imagen del topic" class="w-full h-full object-cover rounded-md">
+                </div>
         
-        <div class="col-span-10 flex gap-4">
-            <!-- IMAGEN DEL TOPIC -->
-            <div class="w-20 h-20">
-                <img [src]="getIconPath(topicService.currentTopic?.icon ?? 'default-topic.png')" alt="Imagen del topic" class="w-full h-full object-cover rounded-md">
-            </div>
-    
-            <!-- TITULO DEL TOPIC E INFORMACION GENERAL -->
-            <div class="flex flex-col gap-1">
-                <h1 class="text-text font-bold text-2xl">{{ topicService.currentTopic?.title | titlecase }}</h1>
-                <p class="text-text text-sm">{{ topicService.currentTopic?.description | titlecase }}</p>
-    
-                <div class="flex gap-2">
-                    @for (tag of tags; track $index) {
-                        <span class="text-text text-sm bg-line rounded-md px-2 py-1">{{ tag }}</span>
-                    }
+                <!-- TITULO DEL TOPIC E INFORMACION GENERAL -->
+                <div class="flex flex-col gap-1">
+                    <h1 class="text-text font-bold text-2xl">{{ topicDetail.title | titlecase }}</h1>
+                    <p class="text-text text-sm">{{ topicDetail.description | titlecase }}</p>
+        
+                    <div class="flex gap-2">
+                        @for (tag of topicDetail.topicTags; track $index) {
+                            <span class="text-text text-sm rounded-md px-2 py-1 border border-line" [class]="tag.tag.color">{{ tag.tag.name | titlecase }}</span>
+                        }
+                    </div>
                 </div>
             </div>
+    
+            <!-- ACCIONES DEL TOPIC -->
+            <div class="col-span-2 flex flex-col gap-1 p-4">
+                <button class="text-text text-sm bg-line rounded-md px-2 py-1">
+                    <!-- <p-icon name="pi pi-heart" /> -->
+                    <span>Editar</span>
+                </button>
+            </div>
+        </div>
+    
+        <!-- BARRA LATERAL -->
+        <div class="w-sidebar h-full bg-main p-4 border-2 border-line rounded-md overflow-y-auto">
+            <span class="text-text font-bold">Topic Detail</span>
         </div>
 
-        <!-- ACCIONES DEL TOPIC -->
-        <div class="col-span-2 flex flex-col gap-1 p-4">
-            <button class="text-text text-sm bg-line rounded-md px-2 py-1">
-                <!-- <p-icon name="pi pi-heart" /> -->
-                <span>Editar</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- BARRA LATERAL -->
-    <div class="w-sidebar h-full bg-main p-4 border-2 border-line rounded-md overflow-y-auto">
-        <span class="text-text font-bold">Topic Detail</span>
-    </div>
+    }
 </div>
