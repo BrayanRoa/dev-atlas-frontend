@@ -3,10 +3,11 @@ import { TopicService } from '../../services/topic.service';
 import { TitleCasePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ITopic, ITopicDetailResponse } from '../../interfaces/topics.interfaces';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-topic-detail',
-  imports: [TitleCasePipe],
+  imports: [TitleCasePipe, ButtonModule],
   templateUrl: './topic-detail.html',
   styleUrl: './topic-detail.css',
 })
