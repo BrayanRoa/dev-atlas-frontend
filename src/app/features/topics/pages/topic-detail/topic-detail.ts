@@ -4,6 +4,7 @@ import { TitleCasePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ITopic, ITopicDetailResponse } from '../../interfaces/topics.interfaces';
 import { ButtonModule } from 'primeng/button';
+import { TopicDialogService } from '../../services/topic-dialog.service';
 
 @Component({
   selector: 'app-topic-detail',
@@ -15,6 +16,7 @@ export class TopicDetail {
 
   readonly topicService = inject(TopicService);
   readonly route = inject(ActivatedRoute);
+  readonly topicDialogService = inject(TopicDialogService);
 
   topicId: string = '';
   topicDetail : ITopic | null = null;
@@ -38,5 +40,14 @@ export class TopicDetail {
     }
     const path = `assets/images/${icon}`;
     return path;
+  }
+
+  onEditTopic(): void {
+    if(!this.topicDetail) return;
+    this.topicDialogService.show('edit', 'Editar topic', this.topicDetail);
+  }
+
+  onDeleteTopic(): void {
+    console.log('Eliminar topic');
   }
 }

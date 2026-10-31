@@ -64,11 +64,23 @@ export class CreateEditModal {
   form!: FormGroup;
 
   constructor(){
-    effect(()=>{
-      if(this.topicDialogService.open()){
-        this.loadTags();
-      }
-    })
+    effect(() => {
+      if (!this.topicDialogService.open()) return;
+
+      this.loadTags();
+
+      if (this.topicDialogService.action() !== 'edit' || !this.form) return;
+
+      const topic = this.topicDialogService.topic();
+      const icon = this.icons.find((item) => item.icon === topic?.icon) ?? null;
+
+      this.form.patchValue({
+        name: topic?.title,
+        description: topic?.description,
+        icon,
+        tags: topic?.topicTags.map((item) => item.tagId) ?? [],
+      });
+    });
   }
 
   /**
@@ -86,13 +98,11 @@ export class CreateEditModal {
     ];
   }
 
-
-
   private buildForm(): void {
     this.form = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.minLength(3)]),
       description: new FormControl('', [Validators.required, Validators.minLength(10)]),
-      icon: new FormControl<string | null>(null, [Validators.required]),
+      icon: new FormControl<IIcon | null>(null, [Validators.required]),
       tags: new FormControl<string[] | null>([], [Validators.required]),
     })
   }
