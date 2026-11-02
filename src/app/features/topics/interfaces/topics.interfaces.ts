@@ -37,6 +37,7 @@ export interface ITopicTag {
 }
 
 export interface ITopicCreateResponse extends IBaseResponse<ITopic> {}
+export interface ITopicDeleteResponse extends IBaseResponse<ITopic> {}
 
 // listado de topics, es el listado que se muestra en el sidebar
 export interface ITopicListItem extends Pick<ITopic, 'id' | 'title'> {}

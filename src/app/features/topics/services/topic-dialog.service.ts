@@ -25,6 +25,7 @@ export class TopicDialogService {
   readonly action = computed(() => this.state().action);
   readonly title = computed(() => this.state().title);
   readonly topic = computed(() => this.state().topic);
+  
   /**
    * Abre el modal 
    * @param action - The action to perform

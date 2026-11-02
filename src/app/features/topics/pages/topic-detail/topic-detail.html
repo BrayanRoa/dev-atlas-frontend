@@ -54,6 +54,7 @@
           icon="pi pi-trash"
           variant="outlined"
           [severity]="'danger'"
+          (click)="onDeleteTopic()"
         />
       </div>
     </div>
@@ -75,3 +76,6 @@
 
   }
 </div>
+
+
+<p-confirmdialog />

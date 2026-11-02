@@ -63,6 +63,8 @@ export class CreateEditModal {
   // Formulario
   form!: FormGroup;
 
+  action: 'Crear' | 'Actualizar' = 'Crear';
+
   constructor(){
     effect(() => {
       if (!this.topicDialogService.open()) return;
@@ -70,7 +72,7 @@ export class CreateEditModal {
       this.loadTags();
 
       if (this.topicDialogService.action() !== 'edit' || !this.form) return;
-
+      this.action = 'Actualizar';
       const topic = this.topicDialogService.topic();
       const icon = this.icons.find((item) => item.icon === topic?.icon) ?? null;
 
@@ -133,11 +135,42 @@ export class CreateEditModal {
       tags: this.form.value.tags ?? []
     };
 
+    if (this.action === 'Actualizar') {
+      this.updateRequest(topic);
+    }else{
+      this.createRequest(topic);
+    }
+
+  }
+
+  /**
+   * Realiza la solicitud de creación de un topic
+   * @param topic - El topic a crear
+   */
+  createRequest(topic: ITopicCreatePayload): void {
     this.topicService.createTopic(topic).subscribe({
       next: (response) => {
         this.createTopicMessage(response.data.title);
         this.created.emit();
         this.closeDialog();
+      },
+      error: (error) => {
+        this.createTopicErrorMessage(error?.error?.message);
+      }
+    });
+  }
+
+  /**
+   * Realiza la solicitud de actualización de un topic
+   * @param topic - El topic a actualizar
+   */
+  updateRequest(topic: ITopicCreatePayload): void {
+    this.topicService.updateTopic(topic, this.topicDialogService.topic()?.id ?? '').subscribe({
+      next: (response) => {
+        this.updateTopicMessage(response.data.title);
+        this.created.emit();
+        this.closeDialog();
+        
       },
       error: (error) => {
         this.createTopicErrorMessage(error?.error?.message);
@@ -165,6 +198,14 @@ export class CreateEditModal {
       severity: 'success',
       summary: 'Topic creado',
       detail: `El topic ${message} ha sido creado correctamente`,
+    });
+  }
+
+  updateTopicMessage(message: string): void {
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Topic actualizado',
+      detail: `El topic ${message} ha sido actualizado correctamente`,
     });
   }
 
