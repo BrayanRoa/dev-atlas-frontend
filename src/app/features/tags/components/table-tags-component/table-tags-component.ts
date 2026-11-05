@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { IWorkspace } from '../../../workspaces/interfaces/workspace.interface';
 import { ITag } from '../../interfaces/tag.interface';
@@ -16,7 +16,13 @@ export interface ITableTags extends ITag  {
   styleUrl: './table-tags-component.css',
 })
 export class TableTagsComponent implements OnChanges {
-  
+
+  @Output() 
+  onEditTagEvent = new EventEmitter<ITag>();
+
+  @Output() 
+  onDeleteTagEvent = new EventEmitter<ITag>();
+
   @Input() workspaces!: IWorkspace[];
 
   tableTags: ITableTags[] = [];
@@ -28,6 +34,7 @@ export class TableTagsComponent implements OnChanges {
   }
 
   private buildTableTags(): void {
+    this.tableTags = [];
     for (const workspace of this.workspaces) {
       for (const tag of workspace.tags ?? []) {
         this.tableTags.push({
@@ -36,5 +43,13 @@ export class TableTagsComponent implements OnChanges {
         });
       }
     }
+  }
+
+  onEditTag(tag: ITag): void {
+    this.onEditTagEvent.emit(tag);
+  }
+
+  onDeleteTag(tag: ITag): void {
+    this.onDeleteTagEvent.emit(tag);
   }
 }

@@ -6,7 +6,7 @@
 >
   <ng-template #header>
     <div class="inline-flex items-center justify-center gap-2">
-      <span class="font-bold whitespace-nowrap">Crear nuevo tag</span>
+      <span class="font-bold whitespace-nowrap">{{ action === 'create' ? 'Crear nuevo tag' : 'Editar tag' }}</span>
     </div>
   </ng-template>
 
@@ -37,6 +37,7 @@
         optionValue="value"
         placeholder="Selecciona un workspace"
         [fluid]="true"
+        [disabled]="action === 'edit'"
       />
 
       <!-- COLOR DEL TAG -->

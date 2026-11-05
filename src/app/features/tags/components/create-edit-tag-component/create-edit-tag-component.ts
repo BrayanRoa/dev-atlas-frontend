@@ -1,5 +1,19 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { IftaLabelModule } from 'primeng/iftalabel';
@@ -8,7 +22,7 @@ import { SelectModule } from 'primeng/select';
 import { CommonModule } from '@angular/common';
 
 import { WorkSpaceService } from '../../../workspaces/services/work-space.service';
-import { ITagPayload } from '../../interfaces/tag.interface';
+import { ITag, ITagPayload } from '../../interfaces/tag.interface';
 
 interface ISelectWorkspace {
   label: string;
@@ -29,7 +43,10 @@ interface ISelectWorkspace {
   templateUrl: './create-edit-tag-component.html',
   styleUrl: './create-edit-tag-component.css',
 })
-export class CreateEditTagComponent implements OnInit {
+export class CreateEditTagComponent implements OnInit, OnChanges {
+
+  @Input() tag!: ITag | null;
+  @Input() action: 'create' | 'edit' = 'create';
 
   /**
    * Clases completas a propósito. Tailwind no genera `bg-red-500`
@@ -67,7 +84,7 @@ export class CreateEditTagComponent implements OnInit {
 
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() onCancelEvent = new EventEmitter<void>();
-  @Output() onSubmitEvent = new EventEmitter<ITagPayload>();
+  @Output() onSubmitEvent = new EventEmitter<{action: 'create' | 'edit', id?: string, payload: ITagPayload}>();
 
   private readonly workSpaceService = inject(WorkSpaceService);
 
@@ -76,11 +93,33 @@ export class CreateEditTagComponent implements OnInit {
     this.loadWorkspaces();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tag'] && this.tag) {
+      this.patchForm();
+    } else {
+      this.action = 'create';
+    }
+  }
+  
   // Formulario
+  
+  private patchForm(): void {
+    if (!this.tag) return;
+    this.form.patchValue({
+      name: this.tag.name,
+      color: this.tag.color,
+      workSpaceId: this.tag.workSpaceId,
+    });
+    this.action = 'edit';
+  }
 
   private buildForm(): void {
     this.form = new FormGroup({
-      name: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]),
+      name: new FormControl('', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(20),
+      ]),
       color: new FormControl('', [Validators.required]),
       workSpaceId: new FormControl('', [Validators.required]),
     });
@@ -112,7 +151,19 @@ export class CreateEditTagComponent implements OnInit {
     }
 
     const { name, color, workSpaceId } = this.form.value;
-    this.onSubmitEvent.emit({ name, color, workSpaceId });
+
+    if (this.action === 'edit') {
+      this.onSubmitEvent.emit({ 
+        action: this.action, 
+        id: this.tag?.id, 
+        payload: { name, color, workSpaceId } 
+      });
+    } else {
+      this.onSubmitEvent.emit({ 
+        action: this.action, 
+        payload: { name, color, workSpaceId } 
+      });
+    }
   }
 
   onCancel(): void {

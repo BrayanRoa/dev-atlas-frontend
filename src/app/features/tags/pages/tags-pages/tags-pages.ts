@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule, TitleCasePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 
 import { CreateEditTagComponent } from '../../components/create-edit-tag-component/create-edit-tag-component';
 import { TagsService } from '../../services/tags.service';
-import { ITagPayload } from '../../interfaces/tag.interface';
+import { ITag, ITagPayload } from '../../interfaces/tag.interface';
 import { WorkSpaceService } from '../../../workspaces/services/work-space.service';
 import { IWorkspace } from '../../../workspaces/interfaces/workspace.interface';
 import { TableModule } from 'primeng/table';
@@ -31,6 +31,9 @@ export class TagsPages {
   private readonly workSpaceService = inject(WorkSpaceService);
   private readonly tagsService = inject(TagsService);
   private readonly messageService = inject(MessageService);
+
+  tagToEdit!: ITag;
+  action: 'create' | 'edit' = 'create';
 
   visibleModal = false;
 
@@ -57,6 +60,7 @@ export class TagsPages {
    * aparezca en su grupo. No pasa por el sidebar: ese método también recarga topics.
    */
   loadWorkspacesWithTags(): void {
+    this.workSpaceService.workspaces = [];
     this.workSpaceService.getWorkspaces().subscribe({
       next: (response) => {
         this.workSpaceService.workspaces = response.data;
@@ -69,9 +73,18 @@ export class TagsPages {
     this.showErrorToast('Error', 'Error al cargar los workspaces con tags');
   }
 
-  // Crear
+  // Crear y actualizar tags
 
-  onCreateTag(payload: ITagPayload): void {
+  onCreateOrUpdateTag(data: { action: 'create' | 'edit', id?: string, payload: ITagPayload }): void {
+    if (data.action === 'create') {
+      this.onCreateTag(data.payload);
+    } else {
+      this.onUpdateTag(data.id!, data.payload);
+    }
+  }
+
+  // Crear tag
+  private onCreateTag(payload: ITagPayload): void {
     this.tagsService.createTag(payload).subscribe({
       next: () => {
         this.visibleModal = false;
@@ -79,6 +92,22 @@ export class TagsPages {
         this.loadWorkspacesWithTags();
       },
       error: (error) => this.onCreateTagError(error),
+    });
+  }
+
+  // Actualizar tag
+  private onUpdateTag(id: string, payload: ITagPayload): void {
+    if (!id) {
+      this.showErrorToast('Error', 'El id del tag es requerido');
+      return;
+    }
+    this.tagsService.updateTag(id, payload).subscribe({
+      next: () => {
+        this.visibleModal = false;
+        this.showSuccessToast('Tag actualizado correctamente', 'El tag ha sido actualizado correctamente');
+        this.loadWorkspacesWithTags();
+      },
+      error: (error) => console.error(error),
     });
   }
 
@@ -107,6 +136,22 @@ export class TagsPages {
       severity: 'error',
       summary,
       detail,
+    });
+  }
+
+  onEditTag(tag: ITag): void {
+    this.visibleModal = true;
+    this.tagToEdit = tag;
+    this.action = 'edit';
+  }
+
+  onDeleteTag(tag: ITag): void {
+    this.tagsService.deleteTag(tag.id).subscribe({
+      next: () => {
+        this.showSuccessToast('Tag eliminado correctamente', 'El tag ha sido eliminado correctamente');
+        this.loadWorkspacesWithTags();
+      },
+      error: (error) => this.showErrorToast('Error', error.error?.message ?? 'Error al eliminar el tag'),
     });
   }
 }

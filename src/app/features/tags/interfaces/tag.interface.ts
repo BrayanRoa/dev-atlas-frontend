@@ -14,4 +14,4 @@ export interface ITag {
   deletedAt?: Date | null;
 }
 
-export interface ITagCreateRequest extends ITag {}
+export interface ITagCreateOrUpdateRequest extends ITag {}

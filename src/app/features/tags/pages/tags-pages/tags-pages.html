@@ -8,14 +8,20 @@
   
   
   <div class="flex flex-col gap-4 bg-panel p-4 rounded-md">
-    <app-table-tags-component [workspaces]="allWorkspacesWithTags()" />
+    <app-table-tags-component 
+      [workspaces]="allWorkspacesWithTags()" 
+      (onEditTagEvent)="onEditTag($event)"
+      (onDeleteTagEvent)="onDeleteTag($event)"
+    />
   </div>
 
 </div>
 
 <app-create-edit-tag-component
   [(visible)]="visibleModal"
-  (onSubmitEvent)="onCreateTag($event)"
+  [tag]="tagToEdit"
+  [action]="action"
+  (onSubmitEvent)="onCreateOrUpdateTag($event)"
 />
 
 <p-toast />
