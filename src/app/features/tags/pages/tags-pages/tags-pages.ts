@@ -9,6 +9,8 @@ import { TagsService } from '../../services/tags.service';
 import { ITagPayload } from '../../interfaces/tag.interface';
 import { WorkSpaceService } from '../../../workspaces/services/work-space.service';
 import { IWorkspace } from '../../../workspaces/interfaces/workspace.interface';
+import { TableModule } from 'primeng/table';
+import { TableTagsComponent } from '../../components/table-tags-component/table-tags-component';
 
 @Component({
   selector: 'app-tags-pages',
@@ -16,8 +18,9 @@ import { IWorkspace } from '../../../workspaces/interfaces/workspace.interface';
     ButtonModule,
     CreateEditTagComponent,
     CommonModule,
-    TitleCasePipe,
     ToastModule,
+    TableModule,
+    TableTagsComponent,
   ],
   templateUrl: './tags-pages.html',
   styleUrl: './tags-pages.css',

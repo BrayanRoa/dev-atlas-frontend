@@ -48,7 +48,7 @@
           @for (color of colors; track color.value) {
           <div
             (click)="onSelectColor(color.value)"
-            class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border border-line"
+            class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-line"
             [ngClass]="color.value"
             [class.ring-2]="isSelected(color.value)"
             [class.ring-text]="isSelected(color.value)"
