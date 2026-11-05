@@ -13,7 +13,8 @@ export class TopicService {
   
   private readonly http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/topics`;
-  readonly topicSaved = signal(0)
+  readonly topicSaved = signal(0);
+  readonly topicRemoved = signal(0);
 
   private _currentTopic: ITopicListItem | null = null;
 
@@ -53,7 +54,7 @@ export class TopicService {
    */
   deleteTopic(topicId: string): Observable<ITopicDeleteResponse> {
     return this.http.delete<ITopicDeleteResponse>(`${this.baseUrl}/delete/${topicId}`).pipe(
-      tap(()=> this.topicSaved.update(prev => prev + 1))
+      tap(() => this.topicRemoved.update((prev) => prev + 1))
     );
   }
 

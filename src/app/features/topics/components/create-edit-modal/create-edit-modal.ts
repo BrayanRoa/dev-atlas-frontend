@@ -68,20 +68,23 @@ export class CreateEditModal {
   constructor(){
     effect(() => {
       if (!this.topicDialogService.open()) return;
-
       this.loadTags();
+    });
+  }
 
-      if (this.topicDialogService.action() !== 'edit' || !this.form) return;
-      this.action = 'Actualizar';
-      const topic = this.topicDialogService.topic();
-      const icon = this.icons.find((item) => item.icon === topic?.icon) ?? null;
+  /** Rellena el formulario cuando el diálogo termina de abrirse. */
+  onDialogShow(): void {
+    if (this.topicDialogService.action() !== 'edit' || !this.form) return;
 
-      this.form.patchValue({
-        name: topic?.title,
-        description: topic?.description,
-        icon,
-        tags: topic?.topicTags.map((item) => item.tagId) ?? [],
-      });
+    const topic = this.topicDialogService.topic();
+    const icon = this.icons.find((item) => item.icon === topic?.icon) ?? null;
+
+    this.action = 'Actualizar';
+    this.form.patchValue({
+      name: topic?.title,
+      description: topic?.description,
+      icon,
+      tags: topic?.topicTags.map((item) => item.tagId) ?? [],
     });
   }
 
@@ -141,6 +144,7 @@ export class CreateEditModal {
       this.createRequest(topic);
     }
 
+    this.resetForm();
   }
 
   /**
@@ -180,6 +184,7 @@ export class CreateEditModal {
 
   onCancel(): void {
     this.closeDialog();
+    this.resetForm();
   }
 
   onDialogVisibleChange(open: boolean): void {
@@ -189,7 +194,7 @@ export class CreateEditModal {
   }
 
   private closeDialog(): void {
-    this.form?.reset();
+    this.resetForm();
     this.topicDialogService.close();
   }
 
@@ -236,5 +241,10 @@ export class CreateEditModal {
         console.error(error);
       }
     });
+  }
+
+  resetForm(): void {
+    this.action = 'Crear';
+    this.form.reset();
   }
 }

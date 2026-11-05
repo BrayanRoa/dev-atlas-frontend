@@ -5,6 +5,7 @@
   draggable="false"
   [visible]="topicDialogService.open()"
   (visibleChange)="onDialogVisibleChange($event)"
+  (onShow)="onDialogShow()"
   [style]="{ width: '500px' }"
 >
   <!-- header -->

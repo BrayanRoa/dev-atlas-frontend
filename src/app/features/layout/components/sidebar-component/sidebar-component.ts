@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, effect, inject, OnInit } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -46,6 +46,17 @@ export class SidebarComponent implements OnInit {
   private readonly topicService = inject(TopicService);
   private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
+
+  constructor() {
+    effect(() => {
+      if (this.topicService.topicRemoved() === 0) return;
+
+      const workspaceId = this.workspaceSelected?.id;
+      if (!workspaceId) return;
+
+      this.loadTopics(workspaceId);
+    });
+  }
 
   ngOnInit(): void {
     this.loadWorkspaces();
@@ -182,7 +193,8 @@ export class SidebarComponent implements OnInit {
   private onTopicsLoaded(topics: ITopicListItem[]): void {
     console.log({topics});
     if(!topics.length) {
-      console.log('no hay topics');
+      this.topics = [];
+      this.applyTopic(null);
       this.router.navigate(['/dashboard/topic/empty']);
       return
     }
