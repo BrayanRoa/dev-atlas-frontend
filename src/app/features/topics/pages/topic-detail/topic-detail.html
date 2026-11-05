@@ -81,4 +81,9 @@
   }
 </div>
 
-<p-confirmdialog />
+<!-- MODAL DE ELIMINACION DE TOPIC -->
+<app-delete-confirm-modal-component 
+  [visible]="visible" 
+  (visibleChange)="visible = $event"
+  (confirm)="onConfirmDeleteTopic()">
+</app-delete-confirm-modal-component>  

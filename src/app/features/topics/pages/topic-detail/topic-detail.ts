@@ -1,35 +1,35 @@
 import { Component, effect, inject } from '@angular/core';
-import { TopicService } from '../../services/topic.service';
 import { TitleCasePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import {
-  ITopic,
-  ITopicDetailResponse,
-} from '../../interfaces/topics.interfaces';
 import { ButtonModule } from 'primeng/button';
-import { TopicDialogService } from '../../services/topic-dialog.service';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 import { MenuModule } from 'primeng/menu';
+
+import { ITopic } from '../../interfaces/topics.interfaces';
+import { TopicService } from '../../services/topic.service';
+import { TopicDialogService } from '../../services/topic-dialog.service';
+import { DeleteConfirmModal } from '../../components/delete-confirm-modal/delete-confirm-modal';
 
 @Component({
   selector: 'app-topic-detail',
-  imports: [TitleCasePipe, ButtonModule, ConfirmDialogModule, MenuModule],
+  imports: [TitleCasePipe, ButtonModule, MenuModule, DeleteConfirmModal],
   templateUrl: './topic-detail.html',
   styleUrl: './topic-detail.css',
-  providers: [ConfirmationService, MessageService],
 })
 export class TopicDetail {
-  items: MenuItem[] | undefined;
 
+  // Servicios
   readonly topicService = inject(TopicService);
   readonly route = inject(ActivatedRoute);
   readonly topicDialogService = inject(TopicDialogService);
-  readonly confirmationService = inject(ConfirmationService);
-  readonly messageService = inject(MessageService);
 
-  topicId: string = '';
+  // Datos del topic
+  topicId = '';
   topicDetail: ITopic | null = null;
+
+  // Menú y confirmación
+  items: MenuItem[] | undefined;
+  visible = false;
 
   constructor() {
     effect(() => {
@@ -46,6 +46,8 @@ export class TopicDetail {
     });
   }
 
+  // Carga del topic
+
   loadTopic(): void {
     this.topicService.getTopic(this.topicId).subscribe((topicResponse) => {
       this.topicDetail = topicResponse.data ?? null;
@@ -56,29 +58,10 @@ export class TopicDetail {
     if (icon === 'default-topic.png') {
       return 'assets/images/default-topic.png';
     }
-    const path = `assets/images/${icon}`;
-    return path;
+    return `assets/images/${icon}`;
   }
 
-  onEditTopic(): void {
-    if (!this.topicDetail) return;
-    this.topicDialogService.show('edit', 'Editar topic', this.topicDetail);
-  }
-
-  onDeleteTopic(): void {
-    this.confirmationService.confirm({
-      header: 'Eliminar topic',
-      message: '¿Estás seguro de querer eliminar este topic?',
-      accept: () => {
-        if (!this.topicDetail) return;
-        this.topicService.deleteTopic(this.topicDetail.id).subscribe({
-          next: () => {
-            this.topicDetail = null;
-          },
-        });
-      },
-    });
-  }
+  // Menú
 
   loadMenuItems(): void {
     this.items = [
@@ -93,5 +76,29 @@ export class TopicDetail {
         command: () => this.onDeleteTopic(),
       },
     ];
+  }
+
+  // Editar
+
+  onEditTopic(): void {
+    if (!this.topicDetail) return;
+    this.topicDialogService.show('edit', 'Editar topic', this.topicDetail);
+  }
+
+  // Eliminar
+
+  /** Abre el diálogo. La página es quien guarda visible. */
+  onDeleteTopic(): void {
+    this.visible = true;
+  }
+
+  /** Solo corre si el modal emitió confirm. */
+  onConfirmDeleteTopic(): void {
+    if (!this.topicDetail) return;
+    this.topicService.deleteTopic(this.topicDetail.id).subscribe({
+      next: () => {
+        this.topicDetail = null;
+      },
+    });
   }
 }

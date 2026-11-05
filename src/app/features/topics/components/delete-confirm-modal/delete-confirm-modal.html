@@ -1,0 +1,22 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [closable]="false"
+  header="Eliminar topic"
+  [style]="{ width: '26rem' }"
+>
+  <div class="flex flex-col gap-4">
+    <p class="text-surface-500 dark:text-surface-400 text-sm mt-0 mb-0">
+      ¿Estás seguro de querer eliminar este topic? Esta acción no se puede
+      deshacer.
+    </p>
+    <div class="flex justify-end gap-2">
+      <button type="button" pButton severity="secondary" (click)="onCancel()">
+        Cancelar
+      </button>
+      <button type="button" pButton severity="danger" (click)="onConfirm()">
+        Eliminar
+      </button>
+    </div>
+  </div>
+</p-dialog>
