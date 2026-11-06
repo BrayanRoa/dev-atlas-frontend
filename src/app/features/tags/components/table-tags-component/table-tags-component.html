@@ -22,4 +22,9 @@
   </ng-template>
 </p-table>
 
-
+<app-modal-confirm-component 
+  [visible]="visibleModalConfirmation"
+  [config]="modalConfirmationConfig" 
+  (confirm)="onConfirm()" 
+  (cancel)="onCancel()" 
+/>

@@ -151,7 +151,13 @@ export class TagsPages {
         this.showSuccessToast('Tag eliminado correctamente', 'El tag ha sido eliminado correctamente');
         this.loadWorkspacesWithTags();
       },
-      error: (error) => this.showErrorToast('Error', error.error?.message ?? 'Error al eliminar el tag'),
+      error: (error) => {
+        if(error.status === 400 && error.error?.message === 'Tag is in use') {
+          this.showErrorToast('Error', 'El tag está en uso y no puede ser eliminado');
+          return;
+        }
+        this.showErrorToast('Error', 'Error al eliminar el tag');
+      },
     });
   }
 }
