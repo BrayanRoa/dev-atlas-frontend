@@ -32,7 +32,9 @@ export class TopicService {
    * @returns Observable<ITopicCreateResponse>
    */
   createTopic(topic: ITopicCreatePayload): Observable<ITopicCreateResponse> {
-    return this.http.post<ITopicCreateResponse>(`${this.baseUrl}`, topic);
+    return this.http.post<ITopicCreateResponse>(`${this.baseUrl}`, topic).pipe(
+      tap(()=> this.topicSaved.update(prev => prev + 1))
+    );
   }
 
   /**
@@ -64,5 +66,9 @@ export class TopicService {
 
   getTopic(topicId: string): Observable<ITopicDetailResponse> {
     return this.http.get<ITopicDetailResponse>(`${this.baseUrl}/${topicId}`);
+  }
+
+  getSubtopics(topicId: string): Observable<ITopicListResponse> {
+    return this.http.get<ITopicListResponse>(`${this.baseUrl}/subtopics/${topicId}`);
   }
 }

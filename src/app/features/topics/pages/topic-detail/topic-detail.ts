@@ -5,11 +5,12 @@ import { ButtonModule } from 'primeng/button';
 import { MenuItem } from 'primeng/api';
 import { MenuModule } from 'primeng/menu';
 
-import { ITopic } from '../../interfaces/topics.interfaces';
+import { ITopic, ITopicListItem } from '../../interfaces/topics.interfaces';
 import { TopicService } from '../../services/topic.service';
 import { TopicDialogService } from '../../services/topic-dialog.service';
 import { DeleteConfirmModal } from '../../components/delete-confirm-modal/delete-confirm-modal';
 import { SubtopicsMenu } from '../../components/subtopics-menu/subtopics-menu';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-topic-detail',
@@ -27,6 +28,7 @@ export class TopicDetail {
   // Datos del topic
   topicId = '';
   topicDetail: ITopic | null = null;
+  subtopics: ITopicListItem[] = [];
 
   // Menú y confirmación
   items: MenuItem[] | undefined;
@@ -50,8 +52,13 @@ export class TopicDetail {
   // Carga del topic
 
   loadTopic(): void {
-    this.topicService.getTopic(this.topicId).subscribe((topicResponse) => {
-      this.topicDetail = topicResponse.data ?? null;
+    this.topicService.getTopic(this.topicId).pipe(
+      switchMap((topicResponse) => {
+        this.topicDetail = topicResponse.data ?? null;
+        return this.topicService.getSubtopics(this.topicId);
+      }),
+    ).subscribe((subtopicsResponse) => {
+      this.subtopics = subtopicsResponse.data ?? [];
     });
   }
 
