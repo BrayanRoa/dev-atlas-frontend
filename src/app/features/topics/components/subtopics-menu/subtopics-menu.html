@@ -20,11 +20,23 @@
 
   <hr>
   @if (subtopicsList.length > 0) {
-  <div class="flex flex-col gap-2 overflow-y-auto">
+  <div class="flex flex-col gap-1 overflow-y-auto">
     @for (subtopic of subtopicsList; track subtopic.id) {
-      <div class="flex justify-start items-center hover:bg-panel p-2 rounded-md cursor-pointer" (click)="onSelectSubtopic(subtopic)">
-        <img src="assets/icons/gray-folder.svg" alt="subtopic" class="size-6 mr-2" />
-        <span class="text-text text-sm font-bold">{{ subtopic.title | titlecase }}</span>
+      <div class="flex justify-between items-center hover:bg-panel p-1 rounded-md cursor-pointer" (click)="onSelectSubtopic(subtopic)">
+        <div class="flex justify-start items-center">
+          <img src="assets/icons/gray-folder.svg" alt="subtopic" class="size-6 mr-2" />
+          <span class="text-text text-sm font-bold">{{ subtopic.title | titlecase }}</span>
+        </div>
+        <div class="flex justify-end items-center">
+          <p-button
+            type="button"
+            icon="pi pi-pencil"
+            iconOnly
+            variant="text"
+            [severity]="'contrast'"
+            (onClick)="onEditSubtopic(subtopic)"
+          />
+        </div>
       </div>
     }
   </div>

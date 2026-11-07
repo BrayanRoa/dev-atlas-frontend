@@ -29,5 +29,14 @@ export class SubtopicsMenu {
     );
   }
 
+  onEditSubtopic(subtopic: any): void {
+    this.topicDialogService.show(
+      'edit',
+      'Editar subtopic',
+      subtopic,
+      this.topicService.currentTopic?.id ?? null,
+    );
+  }
+
   onSelectSubtopic(subtopic: any): void {}
 }
