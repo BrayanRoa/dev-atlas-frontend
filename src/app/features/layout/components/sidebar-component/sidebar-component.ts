@@ -11,7 +11,7 @@ import { TopicService } from '../../../topics/services/topic.service';
 import { CreateEditModal } from '../../../topics/components/create-edit-modal/create-edit-modal';
 import { FormWorkspaceComponent } from '../../../workspaces/components/form-workspace-component/form-workspace-component';
 import { WorkSpaceService } from '../../../workspaces/services/work-space.service';
-import { ITopic, ITopicListItem } from '../../../topics/interfaces/topics.interfaces';
+import { ITopicListItem } from '../../../topics/interfaces/topics.interfaces';
 import { IWorkspace, IWorkspaceCreateRequest } from '../../../workspaces/interfaces/workspace.interface';
 
 @Component({
@@ -50,11 +50,7 @@ export class SidebarComponent implements OnInit {
   constructor() {
     effect(() => {
       if (this.topicService.topicRemoved() === 0) return;
-
-      const workspaceId = this.workspaceSelected?.id;
-      if (!workspaceId) return;
-
-      this.loadTopics(workspaceId);
+      this.loadWorkspaces();
     });
   }
 
@@ -76,7 +72,7 @@ export class SidebarComponent implements OnInit {
   onSelectWorkspace(workspace: IWorkspace): void {
     this.applyWorkspace(workspace);
     this.openListWorkspace = false;
-    this.loadTopics(workspace.id);
+    this.applyTopicsFromWorkspace(workspace);
   }
 
   // Workspaces: crear uno nuevo
@@ -134,14 +130,9 @@ export class SidebarComponent implements OnInit {
     this.applyTopic(topic);
   }
 
-  /** El modal vive en este componente, así que el evento llega directo y se puede volver a pedir la lista. */
+  /** Tras crear, vuelve a pedir workspaces: ahí vienen los topics raíz del sidebar. */
   onTopicCreated(): void {
-    const workspaceId = this.workspaceSelected?.id;
-    if (!workspaceId) {
-      return;
-    }
-
-    this.loadTopics(workspaceId);
+    this.loadWorkspaces();
   }
 
   // Carga de workspaces
@@ -149,8 +140,8 @@ export class SidebarComponent implements OnInit {
   private loadWorkspaces(): void {
     this.workSpaceService.getWorkspaces().subscribe({
       next: (response) => {
-        this.onWorkspacesLoaded(response.data);
         this.workSpaceService.workspaces = response.data;
+        this.onWorkspacesLoaded(response.data);
       },
       error: (error) => console.error(error),
     });
@@ -158,8 +149,9 @@ export class SidebarComponent implements OnInit {
 
   private onWorkspacesLoaded(workspaces: IWorkspace[]): void {
     this.workspaces = workspaces;
-    this.applyWorkspace(this.resolveSelectedWorkspace(workspaces));
-    this.loadTopics(this.workspaceSelected?.id ?? '');
+    const workspace = this.resolveSelectedWorkspace(workspaces);
+    this.applyWorkspace(workspace);
+    this.applyTopicsFromWorkspace(workspace);
   }
 
   /** Conserva el workspace actual si sigue en la lista. Si no, toma el primero. */
@@ -176,31 +168,34 @@ export class SidebarComponent implements OnInit {
     this.workSpaceService.currentWorkspace = workspace;
   }
 
-  // Carga de topics
+  // Topics desde el workspace ya cargado
 
-  private loadTopics(workspaceId: string): void {
-    if (!workspaceId) {
-      this.topics = [];
-      return;
-    }
-
-    this.topicService.getAllTopics(workspaceId).subscribe({
-      next: (response) => this.onTopicsLoaded(response.data),
-      error: (error) => console.error(error),
-    });
+  private applyTopicsFromWorkspace(workspace: IWorkspace | null): void {
+    const topics = (workspace?.topics ?? []).map((topic) => ({
+      id: topic.id,
+      title: topic.title,
+    }));
+    this.onTopicsLoaded(topics);
   }
 
   private onTopicsLoaded(topics: ITopicListItem[]): void {
-    console.log({topics});
-    if(!topics.length) {
+    if (!topics.length) {
       this.topics = [];
       this.applyTopic(null);
       this.router.navigate(['/dashboard/topic/empty']);
-      return
+      return;
     }
-    console.log('hay topics');
+
     this.topics = topics;
-    this.applyTopic(topics[0] ?? null);
+
+    const selectedStillExists = topics.some(
+      (topic) => topic.id === this.topicSelected?.id,
+    );
+    const topicToSelect = selectedStillExists
+      ? this.topicSelected
+      : topics[0];
+
+    this.applyTopic(topicToSelect ?? null);
     this.router.navigate(['/dashboard/topic', this.topicSelected?.id ?? '']);
   }
 
@@ -227,4 +222,3 @@ export class SidebarComponent implements OnInit {
     });
   }
 }
-

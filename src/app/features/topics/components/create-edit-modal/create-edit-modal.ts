@@ -109,6 +109,7 @@ export class CreateEditModal {
       description: new FormControl('', [Validators.required, Validators.minLength(10)]),
       icon: new FormControl<IIcon | null>(null, [Validators.required]),
       tags: new FormControl<string[] | null>([], [Validators.required]),
+      // parentId: new FormControl<string | null>(null, [Validators.required]),
     })
   }
 
@@ -133,7 +134,7 @@ export class CreateEditModal {
       description: this.form.value.description,
       icon: icon.icon,
       content: '',
-      parentId: null,
+      parentId: this.topicDialogService.parentTopicId(),
       workSpaceId,
       tags: this.form.value.tags ?? []
     };

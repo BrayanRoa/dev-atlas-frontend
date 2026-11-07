@@ -1,5 +1,6 @@
 import { IBaseResponse } from '../../../shared/interfaces/base.response';
 import { ITag } from '../../tags/interfaces/tag.interface';
+import { ITopicListItem } from '../../topics/interfaces/topics.interfaces';
 
 export interface IWorkspace {
   id: string;
@@ -9,6 +10,7 @@ export interface IWorkspace {
   userId?: string;
   deletedAt?: Date | null;
   tags?: ITag[];
+  topics?: ITopicListItem[];
 }
 
 export interface IWorkspaceCreateRequest {

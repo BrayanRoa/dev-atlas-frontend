@@ -9,10 +9,11 @@ import { ITopic } from '../../interfaces/topics.interfaces';
 import { TopicService } from '../../services/topic.service';
 import { TopicDialogService } from '../../services/topic-dialog.service';
 import { DeleteConfirmModal } from '../../components/delete-confirm-modal/delete-confirm-modal';
+import { SubtopicsMenu } from '../../components/subtopics-menu/subtopics-menu';
 
 @Component({
   selector: 'app-topic-detail',
-  imports: [TitleCasePipe, ButtonModule, MenuModule, DeleteConfirmModal],
+  imports: [TitleCasePipe, ButtonModule, MenuModule, DeleteConfirmModal, SubtopicsMenu],
   templateUrl: './topic-detail.html',
   styleUrl: './topic-detail.css',
 })
