@@ -1,7 +1,7 @@
 <div class="flex h-full w-full flex-col gap-4">
   @if (subtopic) {
   <div class="flex items-start gap-4">
-    <div
+    <!-- <div
       class="flex size-16 shrink-0 items-center justify-center rounded-2xl border border-line bg-main p-2"
     >
       <img
@@ -9,24 +9,24 @@
         [alt]="subtopic.title"
         class="h-full w-full object-contain"
       />
-    </div>
+    </div> -->
 
     <div class="flex min-w-0 flex-col gap-1">
-      <h1 class="m-0 text-2xl font-bold text-text">
+      <h2 class="font-bold text-text">
         {{ subtopic.title | titlecase }}
-      </h1>
+      </h2>
       <p class="m-0 text-sm text-surface-500 dark:text-surface-400">
         {{ subtopic.description }}
       </p>
 
       @if (subtopic.topicTags.length > 0) {
-      <div class="mt-2 flex flex-wrap gap-2">
+      <div class="mt-1 flex flex-wrap gap-2">
         @for (topicTag of subtopic.topicTags; track topicTag.id) {
         <span
-          class="rounded-full px-3 py-1 text-xs font-medium text-white"
+          class="rounded-full px-3 py-1 text-xs font-bold text-white"
           [class]="topicTag.tag.color"
         >
-          {{ topicTag.tag.name }}
+          {{ topicTag.tag.name | titlecase }}
         </span>
         }
       </div>
@@ -34,7 +34,7 @@
     </div>
   </div>
 
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2 border-2 border-line rounded-md p-2 overflow-y-auto h-full">
     <p class="m-0 text-sm text-text whitespace-pre-wrap">{{ subtopic.content }}</p>
   </div>
   }

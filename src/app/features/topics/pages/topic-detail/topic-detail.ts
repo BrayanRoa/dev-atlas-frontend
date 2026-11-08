@@ -16,7 +16,14 @@ import { TopicContentComponent } from '../../components/topic-content-component/
 
 @Component({
   selector: 'app-topic-detail',
-  imports: [TitleCasePipe, ButtonModule, MenuModule, ModalConfirmComponent, SubtopicsMenu, TopicContentComponent],
+  imports: [
+    TitleCasePipe, 
+    ButtonModule, 
+    MenuModule, 
+    ModalConfirmComponent, 
+    SubtopicsMenu, 
+    TopicContentComponent,
+  ],
   templateUrl: './topic-detail.html',
   styleUrl: './topic-detail.css',
 })
@@ -69,6 +76,7 @@ export class TopicDetail {
       }),
     ).subscribe((subtopicsResponse) => {
       this.subtopics = subtopicsResponse.data ?? [];
+      this.selectedSubtopic = this.subtopics[0] ?? null;
     });
   }
 
