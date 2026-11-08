@@ -5,16 +5,18 @@ import { ButtonModule } from 'primeng/button';
 import { MenuItem } from 'primeng/api';
 import { MenuModule } from 'primeng/menu';
 
-import { ITopic, ITopicListItem } from '../../interfaces/topics.interfaces';
+import { ITopic } from '../../interfaces/topics.interfaces';
 import { TopicService } from '../../services/topic.service';
 import { TopicDialogService } from '../../services/topic-dialog.service';
-import { DeleteConfirmModal } from '../../components/delete-confirm-modal/delete-confirm-modal';
 import { SubtopicsMenu } from '../../components/subtopics-menu/subtopics-menu';
+import { ModalConfirmComponent } from '../../../../shared/components/modal-confirm-component/modal-confirm-component';
+import { IModalConfirmation } from '../../../../shared/interfaces/modal-confirmation.interface';
 import { switchMap } from 'rxjs';
+import { TopicContentComponent } from '../../components/topic-content-component/topic-content-component';
 
 @Component({
   selector: 'app-topic-detail',
-  imports: [TitleCasePipe, ButtonModule, MenuModule, DeleteConfirmModal, SubtopicsMenu],
+  imports: [TitleCasePipe, ButtonModule, MenuModule, ModalConfirmComponent, SubtopicsMenu, TopicContentComponent],
   templateUrl: './topic-detail.html',
   styleUrl: './topic-detail.css',
 })
@@ -28,11 +30,19 @@ export class TopicDetail {
   // Datos del topic
   topicId = '';
   topicDetail: ITopic | null = null;
-  subtopics: ITopicListItem[] = [];
+  subtopics: ITopic[] = [];
+  selectedSubtopic: ITopic | null = null;
 
   // Menú y confirmación
   items: MenuItem[] | undefined;
-  visible = false;
+  visibleModalConfirmation = false;
+  modalConfirmationConfig: IModalConfirmation = {
+    title: 'Eliminar topic',
+    message: '¿Estás seguro de querer eliminar este topic? Esta acción no se puede deshacer.',
+    icon: 'pi pi-trash',
+    confirmButtonText: 'Eliminar',
+    cancelButtonText: 'Cancelar',
+  };
 
   constructor() {
     effect(() => {
@@ -95,18 +105,25 @@ export class TopicDetail {
 
   // Eliminar
 
-  /** Abre el diálogo. La página es quien guarda visible. */
   onDeleteTopic(): void {
-    this.visible = true;
+    this.visibleModalConfirmation = true;
   }
 
-  /** Solo corre si el modal emitió confirm. */
   onConfirmDeleteTopic(): void {
+    this.visibleModalConfirmation = false;
     if (!this.topicDetail) return;
     this.topicService.deleteTopic(this.topicDetail.id).subscribe({
       next: () => {
         this.topicDetail = null;
       },
     });
+  }
+
+  onCancelDeleteTopic(): void {
+    this.visibleModalConfirmation = false;
+  }
+
+  onSelectSubtopic(subtopic: ITopic): void {
+    this.selectedSubtopic = subtopic;
   }
 }

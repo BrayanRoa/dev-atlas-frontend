@@ -2,9 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Observable, tap } from 'rxjs';
-import { ITopic, ITopicCreatePayload, ITopicCreateResponse, ITopicDeleteResponse, ITopicDetailResponse, ITopicListItem, ITopicListResponse } from '../interfaces/topics.interfaces';
-import { IBaseResponse } from '../../../shared/interfaces/base.response';
-
+import { ITopicCreatePayload, ITopicCreateResponse, ITopicDeleteResponse, ITopicDetailResponse, ITopicListItem, ITopicListResponse, ISubtopicsResponse } from '../interfaces/topics.interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -60,15 +58,30 @@ export class TopicService {
     );
   }
 
+  /**
+   * Obtiene todos los topics de un workspace
+   * @param workspaceId - El ID del workspace
+   * @returns Observable<ITopicListResponse>
+   */
   getAllTopics(workspaceId: string): Observable<ITopicListResponse> {
     return this.http.get<ITopicListResponse>(`${this.baseUrl}?workSpaceId=${workspaceId}`);
   }
 
+  /**
+   * Obtiene un topic por su ID
+   * @param topicId - El ID del topic
+   * @returns Observable<ITopicDetailResponse>
+   */
   getTopic(topicId: string): Observable<ITopicDetailResponse> {
     return this.http.get<ITopicDetailResponse>(`${this.baseUrl}/${topicId}`);
   }
 
-  getSubtopics(topicId: string): Observable<ITopicListResponse> {
-    return this.http.get<ITopicListResponse>(`${this.baseUrl}/subtopics/${topicId}`);
+  /**
+   * Obtiene todos los subtopics de un topic
+   * @param topicId - El ID del topic
+   * @returns Observable<ISubtopicsResponse>
+   */
+  getSubtopics(topicId: string): Observable<ISubtopicsResponse> {
+    return this.http.get<ISubtopicsResponse>(`${this.baseUrl}/subtopics/${topicId}`);
   }
 }

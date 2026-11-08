@@ -45,3 +45,6 @@ export interface ITopicListResponse extends IBaseResponse<ITopicListItem[]> {}
 
 // detalle de un topic, es el detalle que se muestra en la página de detalle de un topic
 export interface ITopicDetailResponse extends IBaseResponse<ITopic> {}
+
+// hijos de un topic (GET /topics/subtopics/:id)
+export interface ISubtopicsResponse extends IBaseResponse<ITopic[]> {}

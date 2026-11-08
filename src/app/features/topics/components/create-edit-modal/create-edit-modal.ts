@@ -65,15 +65,26 @@ export class CreateEditModal {
 
   action: 'Crear' | 'Actualizar' = 'Crear';
 
+  /** Topic raíz: create sin parentId, o edit de un topic sin padre. */
+  get isRootTopic(): boolean {
+    if (this.topicDialogService.action() === 'edit') {
+      return this.topicDialogService.topic()?.parentId == null;
+    }
+    return this.topicDialogService.parentTopicId() == null;
+  }
+
   constructor(){
     effect(() => {
       if (!this.topicDialogService.open()) return;
       this.loadTags();
+      this.syncIconValidators();
     });
   }
 
   /** Rellena el formulario cuando el diálogo termina de abrirse. */
   onDialogShow(): void {
+    this.syncIconValidators();
+
     if (this.topicDialogService.action() !== 'edit' || !this.form) return;
 
     const topic = this.topicDialogService.topic();
@@ -107,10 +118,24 @@ export class CreateEditModal {
     this.form = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.minLength(3)]),
       description: new FormControl('', [Validators.required, Validators.minLength(10)]),
-      icon: new FormControl<IIcon | null>(null, [Validators.required]),
+      icon: new FormControl<IIcon | null>(null),
       tags: new FormControl<string[] | null>([], [Validators.required]),
-      // parentId: new FormControl<string | null>(null, [Validators.required]),
-    })
+    });
+  }
+
+  /** Icono obligatorio solo en topics principales. */
+  private syncIconValidators(): void {
+    const iconControl = this.form?.get('icon');
+    if (!iconControl) return;
+
+    if (this.isRootTopic) {
+      iconControl.setValidators([Validators.required]);
+    } else {
+      iconControl.clearValidators();
+      iconControl.setValue(null, { emitEvent: false });
+    }
+
+    iconControl.updateValueAndValidity({ emitEvent: false });
   }
 
   /**
@@ -120,7 +145,7 @@ export class CreateEditModal {
     const workSpaceId = this.workSpaceService.currentWorkspace?.id;
     const icon = this.form.value.icon as IIcon | null;
 
-    if (this.form.invalid || !workSpaceId || !icon) {
+    if (this.form.invalid || !workSpaceId) {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
@@ -132,7 +157,7 @@ export class CreateEditModal {
     const topic: ITopicCreatePayload = {
       title: this.form.value.name,
       description: this.form.value.description,
-      icon: icon.icon,
+      icon: icon?.icon ?? 'default-topic.png',
       content: '',
       parentId: this.topicDialogService.parentTopicId(),
       workSpaceId,

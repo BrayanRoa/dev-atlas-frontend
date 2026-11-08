@@ -43,42 +43,44 @@
       <label for="description">Description</label>
     </p-iftalabel>
 
-    <p-iftalabel>
-      <p-select
-        inputId="icon"
-        appendTo="body"
-        fluid="true"
-        [options]="icons"
-        formControlName="icon"
-        optionLabel="name"
-        [filter]="true"
-        filterBy="name"
-        [showClear]="true"
-        placeholder="Selecciona un icono"
-      >
-        <ng-template #selectedItem let-selectedOption>
-          <div class="flex items-center gap-2">
-            <img
-              [src]="'/assets/images/' + selectedOption.icon"
-              [alt]="selectedOption.name"
-              class="h-4 w-4"
-            />
-            <div>{{ selectedOption.name }}</div>
-          </div>
-        </ng-template>
-        <ng-template #item let-icon>
-          <div class="flex items-center gap-2">
-            <img
-              [src]="'/assets/images/' + icon.icon"
-              [alt]="icon.name"
-              class="h-4 w-4"
-            />
-            <div>{{ icon.name }}</div>
-          </div>
-        </ng-template>
-      </p-select>
-      <label for="icon">Icono</label>
-    </p-iftalabel>
+    @if (isRootTopic) {
+      <p-iftalabel>
+        <p-select
+          inputId="icon"
+          appendTo="body"
+          fluid="true"
+          [options]="icons"
+          formControlName="icon"
+          optionLabel="name"
+          [filter]="true"
+          filterBy="name"
+          [showClear]="true"
+          placeholder="Selecciona un icono"
+        >
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2">
+              <img
+                [src]="'/assets/images/' + selectedOption.icon"
+                [alt]="selectedOption.name"
+                class="h-4 w-4"
+              />
+              <div>{{ selectedOption.name }}</div>
+            </div>
+          </ng-template>
+          <ng-template #item let-icon>
+            <div class="flex items-center gap-2">
+              <img
+                [src]="'/assets/images/' + icon.icon"
+                [alt]="icon.name"
+                class="h-4 w-4"
+              />
+              <div>{{ icon.name }}</div>
+            </div>
+          </ng-template>
+        </p-select>
+        <label for="icon">Icono</label>
+      </p-iftalabel>
+    }
 
     <p-iftalabel>
       <p-multiselect

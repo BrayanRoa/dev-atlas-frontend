@@ -9,7 +9,7 @@
   <div class="flex flex-col gap-4 h-full w-full">
     <!-- ENCABEZADO -->
     <div
-      class="flex justify-between items-center border-b-2 border-line rounded-md p-4"
+      class="flex justify-between items-center border-b-2 border-line rounded-md pb-2"
     >
       <div class="col-span-10 flex gap-4">
         <!-- IMAGEN DEL TOPIC -->
@@ -69,14 +69,16 @@
     <!-- CONTENIDO PRICIPAL -->
     <div class="flex gap-4 h-full w-full">
       <!-- CONTENIDO PRINCIPAL -->
-      <div class="flex-1 h-full w-full grid grid-cols-12 gap-4"></div>
+      <div class="flex-1 h-full w-full gap-4">
+        <app-topic-content-component [subtopic]="selectedSubtopic" />
+      </div>
 
 
       <!-- BARRA LATERAL -->
       <div
         class="w-sidebar h-full bg-main p-4 border-2 border-line rounded-md overflow-y-auto"
       >
-        <app-subtopics-menu [subtopicsList]="subtopics" />
+        <app-subtopics-menu [subtopicsList]="subtopics" (selectedSubtopic)="onSelectSubtopic($event)" />
       </div>
     </div>
   </div>
@@ -84,9 +86,9 @@
   }
 </div>
 
-<!-- MODAL DE ELIMINACION DE TOPIC -->
-<app-delete-confirm-modal-component 
-  [visible]="visible" 
-  (visibleChange)="visible = $event"
-  (confirm)="onConfirmDeleteTopic()">
-</app-delete-confirm-modal-component>  
+<app-modal-confirm-component
+  [visible]="visibleModalConfirmation"
+  [config]="modalConfirmationConfig"
+  (confirm)="onConfirmDeleteTopic()"
+  (cancel)="onCancelDeleteTopic()"
+/>  

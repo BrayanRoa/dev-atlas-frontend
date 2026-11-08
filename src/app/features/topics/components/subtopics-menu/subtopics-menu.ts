@@ -1,8 +1,8 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { TopicDialogService } from '../../services/topic-dialog.service';
 import { TopicService } from '../../services/topic.service';
-import { ITopicListItem } from '../../interfaces/topics.interfaces';
+import { ITopic } from '../../interfaces/topics.interfaces';
 import { TitleCasePipe } from '@angular/common';
 
 @Component({
@@ -13,8 +13,11 @@ import { TitleCasePipe } from '@angular/common';
 })
 export class SubtopicsMenu {
 
-  @Input() 
-  subtopicsList: ITopicListItem[] = [];
+  @Input()
+  subtopicsList: ITopic[] = [];
+
+  @Output()
+  selectedSubtopic = new EventEmitter<ITopic>();
 
   private readonly topicDialogService = inject(TopicDialogService);
   private readonly topicService = inject(TopicService);
@@ -29,7 +32,7 @@ export class SubtopicsMenu {
     );
   }
 
-  onEditSubtopic(subtopic: any): void {
+  onEditSubtopic(subtopic: ITopic): void {
     this.topicDialogService.show(
       'edit',
       'Editar subtopic',
@@ -38,5 +41,7 @@ export class SubtopicsMenu {
     );
   }
 
-  onSelectSubtopic(subtopic: any): void {}
+  onSelectSubtopic(subtopic: ITopic): void {
+    this.selectedSubtopic.emit(subtopic);
+  }
 }
