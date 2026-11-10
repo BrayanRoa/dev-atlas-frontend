@@ -1,11 +1,48 @@
 <div class="flex h-full min-h-0 w-full flex-col gap-3">
+  <!-- hader del subtopic -->
+
+  <div class="flex items-center justify-between">
+    <!-- tags del subtopic -->
+    <div>
+      @for (tag of subtopic?.topicTags ?? []; track $index) {
+      <span
+        class="mr-1 rounded-md border border-line px-2 py-1 text-sm font-bold text-text"
+        [class]="tag.tag.color"
+      >
+        {{ tag.tag.name | titlecase }}
+      </span>
+      }
+    </div>
+
+    <!-- toolbar de acciones -->
+    <div class="flex items-center gap-2">
+      <p-button
+          type="button"
+          icon="pi pi-save"
+          iconOnly
+          variant="outlined"
+          size="small"
+          severity="contrast"
+        />
+        <p-button
+        type="button"
+        icon="pi pi-times"
+        iconOnly
+        variant="outlined"
+        size="small"
+        severity="primary"
+      />
+      <p-button
+          type="button"
+          icon="pi pi-pencil"
+          iconOnly
+          variant="outlined"
+          size="small"
+          severity="primary"
+        />
+    </div>
+  </div>
   @if (subtopic) { @if (!isEditing) {
-  <p-button
-    type="button"
-    label="Editar"
-    icon="pi pi-pencil"
-    (onClick)="onEdit()"
-  />
   <markdown [data]="subtopic.content" [disableSanitizer]="true"> </markdown>
   }@else {
   <div

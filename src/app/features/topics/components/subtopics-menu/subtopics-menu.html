@@ -1,48 +1,72 @@
-<article class="flex flex-col gap-2 w-full">
-  <div class="flex justify-between items-center w-full">
-
-    <div class="flex justify-start items-center">
-        <!-- <img src="assets/icons/gray-folder.svg" alt="subtopic" class="size-8 mr-2" /> -->
-        <span class="text-text text-md font-bold">Subtopics</span>
+<article class="flex w-full flex-col gap-2">
+  <div class="flex w-full items-center justify-between">
+    <div class="flex items-center justify-start">
+      <span class="text-md font-bold text-text">Subtopics</span>
     </div>
-    <div class="flex justify-end items-center">
-        <p-button
-          type="button"
-          icon="pi pi-plus"
-          iconOnly
-          variant="text"
-          [severity]="'contrast'"
-          (onClick)="onCreateSubtopic()"
-        />
+    <div class="flex items-center justify-end">
+      <p-button
+        type="button"
+        icon="pi pi-plus"
+        iconOnly
+        variant="text"
+        [severity]="'contrast'"
+        (onClick)="onCreateSubtopic()"
+      />
     </div>
-
   </div>
 
-  <hr>
+  <hr />
+
   @if (subtopicsList.length > 0) {
   <div class="flex flex-col gap-1 overflow-y-auto">
     @for (subtopic of subtopicsList; track subtopic.id) {
-      <div class="group flex justify-between items-center hover:bg-panel p-1 rounded-md cursor-pointer" (click)="onSelectSubtopic(subtopic)">
-        <div class="flex justify-start items-center">
-          <img src="assets/icons/gray-folder.svg" alt="subtopic" class="size-6 mr-2" />
-          <span class="text-text text-sm font-bold">{{ subtopic.title | titlecase }}</span>
-        </div>
-        <div class="flex justify-end items-center opacity-0 transition-opacity group-hover:opacity-100">
-          <p-button
-            type="button"
-            icon="pi pi-pencil"
-            iconOnly
-            variant="text"
-            [severity]="'contrast'"
-            (onClick)="onEditSubtopic(subtopic); $event.stopPropagation()"
-          />
-        </div>
+    <div
+      class="group flex cursor-pointer items-center justify-between rounded-md p-1 hover:bg-panel"
+      (click)="onSelectSubtopic(subtopic)"
+    >
+      <div class="flex items-center justify-start">
+        <img
+          src="assets/icons/gray-folder.svg"
+          alt="subtopic"
+          class="mr-2 size-6"
+        />
+        <span class="text-sm font-bold text-text">{{
+          subtopic.title | titlecase
+        }}</span>
       </div>
+      <div
+        class="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+      >
+        <p-button
+          type="button"
+          icon="pi pi-pencil"
+          iconOnly
+          variant="text"
+          [severity]="'contrast'"
+          (onClick)="onEditSubtopic(subtopic); $event.stopPropagation()"
+        />
+        <p-button
+          type="button"
+          icon="pi pi-trash"
+          iconOnly
+          variant="text"
+          [severity]="'danger'"
+          (onClick)="onDeleteSubtopic(subtopic); $event.stopPropagation()"
+        />
+      </div>
+    </div>
     }
   </div>
   } @else {
-    <div class="flex justify-center items-center">
-      <span class="text-text text-sm font-bold">No hay subtopics</span>
-    </div>
+  <div class="flex items-center justify-center">
+    <span class="text-sm font-bold text-text">No hay subtopics</span>
+  </div>
   }
 </article>
+
+<app-modal-confirm-component
+  [visible]="visibleModalConfirm"
+  [config]="configModalConfirm"
+  (confirm)="onConfirmDeleteSubtopic()"
+  (cancel)="onCancelDeleteSubtopic()"
+/>

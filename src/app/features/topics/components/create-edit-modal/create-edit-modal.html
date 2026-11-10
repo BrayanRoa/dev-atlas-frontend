@@ -32,8 +32,11 @@
       <label for="name">Nombre</label>
     </p-iftalabel>
 
-    <p-iftalabel>
-      <input
+    <!-- descripción -->
+    <!-- descripción del topic principal, subtopic no tiene descripción -->
+    @if (isRootTopic) {
+      <p-iftalabel>
+        <input
         type="text"
         id="description"
         formControlName="description"
@@ -42,7 +45,8 @@
       />
       <label for="description">Description</label>
     </p-iftalabel>
-
+    }
+    
     @if (isRootTopic) {
       <p-iftalabel>
         <p-select

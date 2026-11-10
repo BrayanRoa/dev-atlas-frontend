@@ -77,13 +77,13 @@ export class CreateEditModal {
     effect(() => {
       if (!this.topicDialogService.open()) return;
       this.loadTags();
-      this.syncIconValidators();
+      this.syncRootOnlyValidators();
     });
   }
 
   /** Rellena el formulario cuando el diálogo termina de abrirse. */
   onDialogShow(): void {
-    this.syncIconValidators();
+    this.syncRootOnlyValidators();
 
     if (this.topicDialogService.action() !== 'edit' || !this.form) return;
 
@@ -93,7 +93,7 @@ export class CreateEditModal {
     this.action = 'Actualizar';
     this.form.patchValue({
       name: topic?.title,
-      description: topic?.description,
+      description: this.isRootTopic ? topic?.description : '',
       icon,
       tags: topic?.topicTags.map((item) => item.tagId) ?? [],
     });
@@ -117,24 +117,32 @@ export class CreateEditModal {
   private buildForm(): void {
     this.form = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.minLength(3)]),
-      description: new FormControl('', [Validators.required, Validators.minLength(10)]),
+      description: new FormControl(''),
       icon: new FormControl<IIcon | null>(null),
       tags: new FormControl<string[] | null>([], [Validators.required]),
     });
   }
 
-  /** Icono obligatorio solo en topics principales. */
-  private syncIconValidators(): void {
+  /** Descripción e icono obligatorios solo en topics principales. */
+  private syncRootOnlyValidators(): void {
+    const descriptionControl = this.form?.get('description');
     const iconControl = this.form?.get('icon');
-    if (!iconControl) return;
+    if (!descriptionControl || !iconControl) return;
 
     if (this.isRootTopic) {
+      descriptionControl.setValidators([
+        Validators.required,
+        Validators.minLength(10),
+      ]);
       iconControl.setValidators([Validators.required]);
     } else {
+      descriptionControl.clearValidators();
+      descriptionControl.setValue('', { emitEvent: false });
       iconControl.clearValidators();
       iconControl.setValue(null, { emitEvent: false });
     }
 
+    descriptionControl.updateValueAndValidity({ emitEvent: false });
     iconControl.updateValueAndValidity({ emitEvent: false });
   }
 
@@ -156,7 +164,7 @@ export class CreateEditModal {
 
     const topic: ITopicCreatePayload = {
       title: this.form.value.name,
-      description: this.form.value.description,
+      description: this.isRootTopic ? (this.form.value.description ?? '') : '',
       icon: icon?.icon ?? 'default-topic.png',
       content: '',
       parentId: this.topicDialogService.parentTopicId(),
