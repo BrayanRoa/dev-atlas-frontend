@@ -9,7 +9,6 @@ import {
   ViewChild,
   inject,
 } from '@angular/core';
-import { TitleCasePipe } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import Editor from '@toast-ui/editor';
 
@@ -20,7 +19,7 @@ import { TopicService } from '../../services/topic.service';
 import { MarkdownModule } from 'ngx-markdown';
 @Component({
   selector: 'app-topic-content-component',
-  imports: [TitleCasePipe, ButtonModule, MarkdownModule],
+  imports: [ButtonModule, MarkdownModule],
   templateUrl: './topic-content-component.html',
   styleUrl: './topic-content-component.css',
 })

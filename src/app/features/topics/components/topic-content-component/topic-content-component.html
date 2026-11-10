@@ -9,8 +9,12 @@
   </div>
 
   @if (subtopic && !isEditing) {
-  <div class="min-h-0 flex-1 overflow-y-auto">
-    <markdown [data]="subtopic.content" [disableSanitizer]="true"></markdown>
+  <div class="topic-markdown-view min-h-0 flex-1 overflow-y-auto px-1">
+    <markdown
+      class="prose prose-invert max-w-none"
+      [data]="subtopic.content"
+      [disableSanitizer]="true"
+    ></markdown>
   </div>
   } @else if (subtopic && isEditing) {
   <div

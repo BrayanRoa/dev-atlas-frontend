@@ -4,6 +4,52 @@
   min-height: 0;
 }
 
+.topic-markdown-view ::ng-deep .prose {
+  --tw-prose-body: var(--color-muted);
+  --tw-prose-headings: var(--color-text);
+  --tw-prose-bold: var(--color-text);
+  --tw-prose-links: var(--color-accent);
+  --tw-prose-code: var(--color-text);
+  --tw-prose-pre-bg: var(--color-main);
+  --tw-prose-pre-code: var(--color-text);
+  --tw-prose-quotes: var(--color-muted);
+  --tw-prose-bullets: var(--color-accent);
+  --tw-prose-counters: var(--color-muted);
+  --tw-prose-hr: var(--color-line);
+  color: var(--color-muted);
+}
+
+.topic-markdown-view ::ng-deep .prose :where(h1, h2, h3, h4) {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.topic-markdown-view ::ng-deep .prose :where(h1) {
+  font-size: 1.75rem;
+  border-bottom: 1px solid var(--color-line);
+  padding-bottom: 0.4rem;
+  margin-top: 0;
+}
+
+.topic-markdown-view ::ng-deep .prose :where(h2) {
+  font-size: 1.35rem;
+  margin-top: 1.5rem;
+}
+
+.topic-markdown-view ::ng-deep .prose :where(pre) {
+  background: var(--color-main);
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+}
+
+.topic-markdown-view ::ng-deep .prose :where(code) {
+  font-size: 0.9em;
+}
+
+.topic-markdown-view ::ng-deep .prose :where(a) {
+  color: var(--color-accent);
+}
+
 .topic-markdown-editor {
   background: var(--color-panel);
 }
