@@ -15,15 +15,20 @@ import Editor from '@toast-ui/editor';
 import { ITopic, ITopicCreatePayload } from '../../interfaces/topics.interfaces';
 import { TopicService } from '../../services/topic.service';
 
+import { FileUploadModule } from 'primeng/fileupload';
+
 // Ngx Markdown imports
 import { MarkdownModule } from 'ngx-markdown';
+import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-topic-content-component',
-  imports: [ButtonModule, MarkdownModule],
+  imports: [ButtonModule, MarkdownModule, FileUploadModule],
   templateUrl: './topic-content-component.html',
   styleUrl: './topic-content-component.css',
+  providers: [MessageService],
 })
 export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestroy {
+
   @Input()
   subtopic: ITopic | null = null;
 
@@ -31,8 +36,11 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
   editorHost?: ElementRef<HTMLDivElement>;
 
   isEditing = false;
+  backupContent:string = '';
 
   private readonly topicService = inject(TopicService);
+  private readonly messageService = inject(MessageService);
+
   private editor: Editor | null = null;
   private viewReady = false;
 
@@ -58,12 +66,16 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
 
   onEdit(): void {
     this.isEditing = true;
+    this.setBackupContent();
     this.scheduleInitEditor();
   }
 
   onCancelEdit(): void {
     this.destroyEditor();
     this.isEditing = false;
+    if (this.subtopic) {
+      this.subtopic.content = this.backupContent;
+    }
   }
 
   onSave(): void {
@@ -83,6 +95,7 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
       next: (response) => {
         this.subtopic = response.data;
         this.isEditing = false;
+        this.setBackupContent();
         // destroy editor
         this.destroyEditor();
       },
@@ -119,5 +132,34 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
   private destroyEditor(): void {
     this.editor?.destroy();
     this.editor = null;
+  }
+
+  onFileSelected(event: Event): void {
+    this.setBackupContent();
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = (e.target?.result as string) ?? '';
+    
+      if (this.editor) {
+        this.editor.setMarkdown(content); // ya estaba editando
+        return;
+      }
+    
+      if (this.subtopic) this.subtopic.content = content;
+      this.isEditing = true;
+      this.scheduleInitEditor(); // primera vez: crear editor
+    };
+    reader.readAsText(file);
+  }
+
+  private setBackupContent(): void {
+    if (this.editor) {
+      this.backupContent = this.editor.getMarkdown();
+    } else if (this.subtopic) {
+      this.backupContent = this.subtopic.content ?? '';
+    }
   }
 }

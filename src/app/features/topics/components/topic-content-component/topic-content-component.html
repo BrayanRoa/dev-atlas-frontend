@@ -1,5 +1,21 @@
 <div class="flex h-full min-h-0 w-full flex-col gap-2">
   <div class="flex shrink-0 items-center justify-end gap-1">
+
+    <!-- UPLOAD FILES -->
+    <input
+      #fileInput
+      type="file"
+      class="hidden"
+      accept=".md,text/markdown"
+      (change)="onFileSelected($event)"
+    />
+    <p-button 
+      icon="pi pi-upload" 
+      [text]="true" 
+      (onClick)="fileInput.click()" 
+      />
+
+    <!-- EDIT / SAVE / CANCEL -->
     @if (!isEditing && subtopic) {
     <p-button icon="pi pi-pencil" [text]="true" (onClick)="onEdit()" />
     } @else if (subtopic && isEditing) {
