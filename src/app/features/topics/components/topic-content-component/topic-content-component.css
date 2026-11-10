@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.topic-markdown-editor {
+  background: var(--color-panel);
+}
+
+.topic-markdown-editor ::ng-deep .toastui-editor-defaultUI {
+  border: none;
+  height: 100%;
+}
+
+.topic-markdown-editor ::ng-deep .toastui-editor-main {
+  background: transparent;
+}
+
+.topic-markdown-editor ::ng-deep .toastui-editor-md-container,
+.topic-markdown-editor ::ng-deep .toastui-editor-ww-container {
+  height: 100%;
+}

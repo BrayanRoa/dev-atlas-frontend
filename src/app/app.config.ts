@@ -14,6 +14,9 @@ import Lara from '@primeuix/themes/lara';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { AuthInterceptor } from './features/auth/interceptor/auth.interceptor';
 
+// Ngx Markdown imports
+import { provideMarkdown } from 'ngx-markdown';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -24,6 +27,10 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([AuthInterceptor])),
 
     provideAnimationsAsync(),
+    
+    // Ngx Markdown configuration
+    provideMarkdown(),
+    
     // PrimeNG configuration
     providePrimeNG({
       theme: {
@@ -35,5 +42,6 @@ export const appConfig: ApplicationConfig = {
         },
       },
     }),
+
   ],
 };

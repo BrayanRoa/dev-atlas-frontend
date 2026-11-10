@@ -6,11 +6,10 @@
     ></app-sidebar-component>
 
     <!-- content -->
-    <div class="flex min-w-0 flex-1 flex-col bg-main">
+    <div class="flex min-h-0 min-w-0 flex-1 flex-col bg-main">
         <!-- header -->
-        <app-header-component></app-header-component>
-        <div class="flex-1 h-full w-full p-4">
-            <!-- router outlet -->
+        <!-- <app-header-component class="shrink-0"></app-header-component> -->
+        <div class="layout-outlet flex min-h-0 flex-1 flex-col overflow-hidden p-4">
             <router-outlet></router-outlet>
         </div>
     </div>
