@@ -1,7 +1,7 @@
 <div class="flex h-full min-h-0 w-full flex-col gap-2">
   <div class="flex shrink-0 items-center justify-end gap-1">
-
     <!-- UPLOAD FILES -->
+    @if(subtopic && !isEditing) {
     <input
       #fileInput
       type="file"
@@ -9,23 +9,32 @@
       accept=".md,text/markdown"
       (change)="onFileSelected($event)"
     />
-    <p-button 
-      icon="pi pi-upload" 
-      [text]="true" 
-      (onClick)="fileInput.click()" 
-      />
+    <p-button icon="pi pi-upload" [text]="true" (onClick)="fileInput.click()" pTooltip="Cargar archivo Markdown" />
+    }
 
     <!-- EDIT / SAVE / CANCEL -->
     @if (!isEditing && subtopic) {
-    <p-button icon="pi pi-pencil" [text]="true" (onClick)="onEdit()" />
+    <p-button icon="pi pi-pencil" [text]="true" (onClick)="onEdit()" pTooltip="Editar contenido" />
     } @else if (subtopic && isEditing) {
-    <p-button icon="pi pi-save" [text]="true" (onClick)="onSave()" />
-    <p-button icon="pi pi-times" [text]="true" (onClick)="onCancelEdit()" />
+    <p-button icon="pi pi-save" [text]="true" (onClick)="onSave()" pTooltip="Guardar contenido" />
+    <p-button icon="pi pi-times" [text]="true" (onClick)="onCancelEdit()" pTooltip="Cancelar edición" />
     }
   </div>
 
   @if (subtopic && !isEditing) {
+  <!-- MARKDOWN VIEW -->
   <div class="topic-markdown-view min-h-0 flex-1 overflow-y-auto px-1">
+  
+    <!-- NO CONTENT -->
+    @if(subtopic.content === '') {
+    <div
+      class="flex h-full items-center justify-center text-center text-gray-500"
+    >
+      No hay contenido para este topic
+    </div>
+    }
+
+    <!-- MARKDOWN CONTENT -->
     <markdown
       class="prose prose-invert max-w-none"
       [data]="subtopic.content"
@@ -33,10 +42,15 @@
     ></markdown>
   </div>
   } @else if (subtopic && isEditing) {
+  <!-- MARKDOWN EDITOR -->
   <div
     class="topic-markdown-editor flex min-h-0 flex-1 flex-col overflow-hidden rounded-md border-2 border-line"
   >
     <div #editorHost class="h-full min-h-0"></div>
   </div>
   }
+
+  <p-toast />
 </div>
+
+<p-confirmdialog />

@@ -15,17 +15,22 @@ import Editor from '@toast-ui/editor';
 import { ITopic, ITopicCreatePayload } from '../../interfaces/topics.interfaces';
 import { TopicService } from '../../services/topic.service';
 
-import { FileUploadModule } from 'primeng/fileupload';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 // Ngx Markdown imports
 import { MarkdownModule } from 'ngx-markdown';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
+type ImportMode = 'replace' | 'append';
+
 @Component({
   selector: 'app-topic-content-component',
-  imports: [ButtonModule, MarkdownModule, FileUploadModule],
+  imports: [ButtonModule, MarkdownModule, ConfirmDialogModule, ToastModule, TooltipModule
+  ],
   templateUrl: './topic-content-component.html',
   styleUrl: './topic-content-component.css',
-  providers: [MessageService],
+  providers: [ConfirmationService, MessageService],
 })
 export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestroy {
 
@@ -36,9 +41,10 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
   editorHost?: ElementRef<HTMLDivElement>;
 
   isEditing = false;
-  backupContent:string = '';
+  backupContent = '';
 
   private readonly topicService = inject(TopicService);
+  private readonly confirmationService = inject(ConfirmationService);
   private readonly messageService = inject(MessageService);
 
   private editor: Editor | null = null;
@@ -58,7 +64,7 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
     this.destroyEditor();
   }
 
-  private changeTopic(){
+  private changeTopic() {
     this.destroyEditor();
     this.isEditing = false;
     this.scheduleInitEditor();
@@ -96,8 +102,17 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
         this.subtopic = response.data;
         this.isEditing = false;
         this.setBackupContent();
-        // destroy editor
         this.destroyEditor();
+        this.messageService.add(
+          { 
+            severity: 'success', 
+            summary: 'Topic Actualizado', 
+            detail: 'Topic actualizado correctamente',
+            life: 3000
+          });
+      },
+      error: (error) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al actualizar el topic' });
       },
     });
   }
@@ -135,31 +150,76 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
   }
 
   onFileSelected(event: Event): void {
-    this.setBackupContent();
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
+
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const content = (e.target?.result as string) ?? '';
-    
-      if (this.editor) {
-        this.editor.setMarkdown(content); // ya estaba editando
-        return;
+    reader.onload = () => {
+      const imported = String(reader.result ?? '');
+      const current = this.getCurrentMarkdown();
+
+      if (!current.trim()) {
+        this.applyImportedMarkdown(imported, 'replace');
+      } else {
+        this.askImportMode(imported);
       }
-    
-      if (this.subtopic) this.subtopic.content = content;
-      this.isEditing = true;
-      this.scheduleInitEditor(); // primera vez: crear editor
+
+      input.value = '';
     };
     reader.readAsText(file);
   }
 
-  private setBackupContent(): void {
+  private askImportMode(imported: string): void {
+    this.confirmationService.confirm({
+      message: '¿Quieres reemplazar el contenido actual o añadir el archivo al final?',
+      header: 'Cargar archivo Markdown',
+      icon: 'pi pi-file',
+      // Sin cerrar con X/Escape: en ConfirmDialog eso dispara reject y añadiría sin querer.
+      closable: false,
+      closeOnEscape: false,
+      acceptButtonProps: {
+        label: 'Reemplazar',
+      },
+      rejectButtonProps: {
+        label: 'Añadir al final',
+        severity: 'secondary',
+        outlined: true,
+      },
+      accept: () => this.applyImportedMarkdown(imported, 'replace'),
+      reject: () => this.applyImportedMarkdown(imported, 'append'),
+    });
+  }
+
+  private applyImportedMarkdown(imported: string, mode: ImportMode): void {
+    this.setBackupContent();
+
+    const current = this.getCurrentMarkdown();
+    const next =
+      mode === 'append' && current.trim()
+        ? `${current.trimEnd()}\n\n${imported}`
+        : imported;
+
     if (this.editor) {
-      this.backupContent = this.editor.getMarkdown();
-    } else if (this.subtopic) {
-      this.backupContent = this.subtopic.content ?? '';
+      this.editor.setMarkdown(next);
+      return;
     }
+
+    if (this.subtopic) {
+      this.subtopic.content = next;
+    }
+    this.isEditing = true;
+    this.scheduleInitEditor();
+  }
+
+  private getCurrentMarkdown(): string {
+    if (this.editor) {
+      return this.editor.getMarkdown();
+    }
+    return this.subtopic?.content ?? '';
+  }
+
+  private setBackupContent(): void {
+    this.backupContent = this.getCurrentMarkdown();
   }
 }
