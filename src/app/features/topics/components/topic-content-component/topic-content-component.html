@@ -1,54 +1,22 @@
-<div class="flex h-full min-h-0 w-full flex-col gap-3">
-  <!-- hader del subtopic -->
-
-  <div class="flex items-center justify-between">
-    <!-- tags del subtopic -->
-    <div>
-      @for (tag of subtopic?.topicTags ?? []; track $index) {
-      <span
-        class="mr-1 rounded-md border border-line px-2 py-1 text-sm font-bold text-text"
-        [class]="tag.tag.color"
-      >
-        {{ tag.tag.name | titlecase }}
-      </span>
-      }
-    </div>
-
-    <!-- toolbar de acciones -->
-    <div class="flex items-center gap-2">
-      <p-button
-          type="button"
-          icon="pi pi-save"
-          iconOnly
-          variant="outlined"
-          size="small"
-          severity="contrast"
-        />
-        <p-button
-        type="button"
-        icon="pi pi-times"
-        iconOnly
-        variant="outlined"
-        size="small"
-        severity="primary"
-      />
-      <p-button
-          type="button"
-          icon="pi pi-pencil"
-          iconOnly
-          variant="outlined"
-          size="small"
-          severity="primary"
-        />
-    </div>
+<div class="flex h-full min-h-0 w-full flex-col gap-2">
+  <div class="flex shrink-0 items-center justify-end gap-1">
+    @if (!isEditing && subtopic) {
+    <p-button icon="pi pi-pencil" [text]="true" (onClick)="onEdit()" />
+    } @else if (subtopic && isEditing) {
+    <p-button icon="pi pi-save" [text]="true" (onClick)="onSave()" />
+    <p-button icon="pi pi-times" [text]="true" (onClick)="onCancelEdit()" />
+    }
   </div>
-  @if (subtopic) { @if (!isEditing) {
-  <markdown [data]="subtopic.content" [disableSanitizer]="true"> </markdown>
-  }@else {
+
+  @if (subtopic && !isEditing) {
+  <div class="min-h-0 flex-1 overflow-y-auto">
+    <markdown [data]="subtopic.content" [disableSanitizer]="true"></markdown>
+  </div>
+  } @else if (subtopic && isEditing) {
   <div
     class="topic-markdown-editor flex min-h-0 flex-1 flex-col overflow-hidden rounded-md border-2 border-line"
   >
     <div #editorHost class="h-full min-h-0"></div>
   </div>
-  } }
+  }
 </div>

@@ -44,19 +44,26 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes['subtopic'] || !this.viewReady) return;
-    // Espera a que @if pinte #editorHost al cambiar de subtopic.
-    this.scheduleInitEditor();
+    this.changeTopic();
   }
 
   ngOnDestroy(): void {
     this.destroyEditor();
   }
 
+  private changeTopic(){
+    this.destroyEditor();
+    this.isEditing = false;
+    this.scheduleInitEditor();
+  }
+
   onEdit(): void {
     this.isEditing = true;
+    this.scheduleInitEditor();
   }
 
   onCancelEdit(): void {
+    this.destroyEditor();
     this.isEditing = false;
   }
 
@@ -103,7 +110,7 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
       el: this.editorHost.nativeElement,
       height: '100%',
       initialEditType: 'markdown',
-      previewStyle: 'tab',
+      previewStyle: 'tab', // 'vertical' | 'tab'
       initialValue: this.subtopic.content ?? '',
       theme: 'dark',
       usageStatistics: false,

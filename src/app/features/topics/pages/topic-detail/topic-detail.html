@@ -32,21 +32,23 @@
             </p>
           </div>
 
-          <!-- descripción -->
+          <!-- descripción del topic principal -->
           <p class="m-0 text-sm text-text">
             {{ topicDetail.description | titlecase }}
           </p>
 
-          <!-- tags del topic principal -->
+          <!-- tags del subtopic seleccionado -->
+          <!-- @if (selectedSubtopic?.topicTags?.length) { -->
           <div class="flex flex-wrap gap-2">
-            @for (tag of topicDetail.topicTags; track $index) {
+            @for (topicTag of joinTags(); track $index) {
             <span
-              class="rounded-md border border-line px-2 py-1 text-sm font-bold text-text"
-              [class]="tag.tag.color"
-              >{{ tag.tag.name | titlecase }}</span
+              class="rounded-md border border-line px-2 py-1 text-xs font-bold text-text"
+              [class]="topicTag.color"
+              >{{ topicTag.name | titlecase }}</span
             >
             }
           </div>
+          <!-- } -->
         </div>
       </div>
 

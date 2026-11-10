@@ -13,6 +13,7 @@ import { SubtopicsMenu } from '../../components/subtopics-menu/subtopics-menu';
 import { TopicContentComponent } from '../../components/topic-content-component/topic-content-component';
 import { ModalConfirmComponent } from '../../../../shared/components/modal-confirm-component/modal-confirm-component';
 import { IModalConfirmation } from '../../../../shared/interfaces/modal-confirmation.interface';
+import { ITag } from '../../../tags/interfaces/tag.interface';
 
 @Component({
   selector: 'app-topic-detail',
@@ -33,7 +34,7 @@ export class TopicDetail {
   readonly route = inject(ActivatedRoute);
   readonly topicDialogService = inject(TopicDialogService);
 
-  // ─── Estado del topic ────────────────────────────────────────
+  // ─── Estado del topic padre ────────────────────────────────────────
   topicId = '';
   topicDetail: ITopic | null = null;
 
@@ -155,5 +156,17 @@ export class TopicDetail {
     this.topicService.deleteTopic(deletedId).subscribe({
       next: () => this.reloadSubtopics(deletedId),
     });
+  }
+
+  // ─── Helpers de UI ───────────────────────────────────────────
+  joinTags(): ITag[] {
+    const parentTags = this.topicDetail?.topicTags.map((t) => t.tag) ?? [];
+    const subtopicTags = this.selectedSubtopic?.topicTags.map((t) => t.tag) ?? [];
+  
+    return [
+      ...new Map(
+        [...parentTags, ...subtopicTags].map((tag) => [tag.id, tag]),
+      ).values(),
+    ];
   }
 }
