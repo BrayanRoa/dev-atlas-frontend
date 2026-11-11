@@ -2,13 +2,27 @@
   <!-- Barra de acciones del contenido -->
   <div
     class="flex shrink-0 items-center gap-1"
-    [class]="fullScreenMode ? 'justify-between' : 'justify-end'"
+    [class]="fullScreenMode ? 'justify-between border-b-2 border-line pb-1' : 'justify-end'"
   >
     <!-- Título corto solo en modo focus -->
     @if (fullScreenMode) {
-    <span class="truncate text-sm font-bold text-text">{{
-      subtopic?.title
-    }}</span>
+    <div class="flex items-center gap-2">
+      <p class="m-0 text-xl font-bold text-text">
+        {{ topic?.title | titlecase }}
+      </p>
+      <i class="pi pi-angle-right"></i>
+      <p class="m-0 text-xl font-bold text-text">
+        {{ subtopic?.title | titlecase }}
+      </p>
+
+      @for (topicTag of tags; track $index) {
+        <span
+          class="rounded-md border border-line px-2 py-1 text-xs font-bold text-text"
+          [class]="topicTag.color"
+          >{{ topicTag.name | titlecase }}</span
+        >
+      }
+    </div>
     }
 
     <div class="flex items-center gap-1">
@@ -21,7 +35,9 @@
         "
         [text]="true"
         [pTooltip]="fullScreenMode ? 'Salir de pantalla completa' : 'Pantalla completa'"
+        [tooltipPosition]="'left'"
         (onClick)="onToggleFullScreen()"
+        [hidden]="subtopic === null"
       />
 
       <!-- Importar .md (solo en edición) -->

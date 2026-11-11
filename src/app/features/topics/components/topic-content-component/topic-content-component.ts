@@ -24,11 +24,13 @@ import { MarkdownModule } from 'ngx-markdown';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
+import { TitleCasePipe } from '@angular/common';
+import { ITag } from '../../../tags/interfaces/tag.interface';
 type ImportMode = 'replace' | 'append';
 
 @Component({
   selector: 'app-topic-content-component',
-  imports: [ButtonModule, MarkdownModule, ConfirmDialogModule, ToastModule, TooltipModule],
+  imports: [ButtonModule, MarkdownModule, ConfirmDialogModule, ToastModule, TooltipModule, TitleCasePipe],
   templateUrl: './topic-content-component.html',
   styleUrl: './topic-content-component.css',
   providers: [ConfirmationService, MessageService],
@@ -39,7 +41,13 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
   fullScreenMode = false;
 
   @Input()
+  topic: ITopic | null = null;
+
+  @Input()
   subtopic: ITopic | null = null;
+
+  @Input()
+  tags: ITag[] = [];
 
   @Output()
   contentSaved = new EventEmitter<ITopic>();
