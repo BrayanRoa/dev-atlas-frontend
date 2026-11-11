@@ -34,7 +34,7 @@ export class TopicDetail {
   readonly route = inject(ActivatedRoute);
   readonly topicDialogService = inject(TopicDialogService);
 
-  // ─── Estado del topic padre ────────────────────────────────────────
+  // ─── Estado del topic padre ──────────────────────────────────
   topicId = '';
   topicDetail: ITopic | null = null;
 
@@ -44,10 +44,9 @@ export class TopicDetail {
   /** Se conserva aparte para no perder la selección al recargar tras un save. */
   private selectedSubtopicId: string | null = null;
 
-  // ─── Menú del topic ──────────────────────────────────────────
+  // ─── UI ──────────────────────────────────────────────────────
+  fullScreenMode = false;
   items: MenuItem[] | undefined;
-
-  // ─── Confirmación eliminar topic ─────────────────────────────
   visibleModalConfirmation = false;
   modalConfirmationConfig: IModalConfirmation = {
     title: 'Eliminar topic',
@@ -71,6 +70,7 @@ export class TopicDetail {
       this.topicId = param['id'];
       this.selectedSubtopicId = null;
       this.selectedSubtopic = null;
+      this.fullScreenMode = false;
       this.loadTopic();
       this.loadMenuItems();
     });
@@ -78,7 +78,6 @@ export class TopicDetail {
 
   // ─── Carga de datos ──────────────────────────────────────────
   loadTopic(): void {
-    // Capturar antes del HTTP: al volver el response, selectedSubtopic puede haber cambiado.
     const preserveId = this.selectedSubtopicId ?? this.selectedSubtopic?.id ?? null;
 
     this.topicService
@@ -116,15 +115,7 @@ export class TopicDetail {
     this.selectedSubtopicId = this.selectedSubtopic?.id ?? null;
   }
 
-  // ─── Helpers de UI ───────────────────────────────────────────
-  getIconPath(icon: string): string {
-    if (icon === 'default-topic.png') {
-      return 'assets/images/default-topic.png';
-    }
-    return `assets/images/${icon}`;
-  }
-
-  loadMenuItems(): void {
+  private loadMenuItems(): void {
     this.items = [
       {
         label: 'Editar',
@@ -152,12 +143,14 @@ export class TopicDetail {
   onConfirmDeleteTopic(): void {
     this.visibleModalConfirmation = false;
     if (!this.topicDetail) return;
+
     this.topicService.deleteTopic(this.topicDetail.id).subscribe({
       next: () => {
         this.topicDetail = null;
         this.selectedSubtopic = null;
         this.selectedSubtopicId = null;
         this.subtopics = [];
+        this.fullScreenMode = false;
       },
     });
   }
@@ -187,11 +180,24 @@ export class TopicDetail {
     });
   }
 
+  // ─── Modo focus ──────────────────────────────────────────────
+  onFullScreenModeChanged(): void {
+    this.fullScreenMode = !this.fullScreenMode;
+  }
+
   // ─── Helpers de UI ───────────────────────────────────────────
+  getIconPath(icon: string): string {
+    if (icon === 'default-topic.png') {
+      return 'assets/images/default-topic.png';
+    }
+    return `assets/images/${icon}`;
+  }
+
   joinTags(): ITag[] {
     const parentTags = this.topicDetail?.topicTags.map((t) => t.tag) ?? [];
-    const subtopicTags = this.selectedSubtopic?.topicTags.map((t) => t.tag) ?? [];
-  
+    const subtopicTags =
+      this.selectedSubtopic?.topicTags.map((t) => t.tag) ?? [];
+
     return [
       ...new Map(
         [...parentTags, ...subtopicTags].map((tag) => [tag.id, tag]),

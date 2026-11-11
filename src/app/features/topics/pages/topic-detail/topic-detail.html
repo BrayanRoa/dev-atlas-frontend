@@ -1,5 +1,5 @@
 <div
-  class="flex h-full min-h-0 w-full flex-col bg-panel border-2 border-line rounded-md p-4"
+  class="flex h-full min-h-0 w-full flex-col rounded-md border-2 border-line bg-panel p-4"
 >
   @if (!topicDetail) {
   <div class="flex h-full w-full items-center justify-center">
@@ -7,12 +7,15 @@
   </div>
   } @else {
   <div class="flex h-full min-h-0 w-full flex-col gap-4">
-    <!-- ENCABEZADO DEL TOPIC -->
+    <!-- Encabezado del topic (oculto en modo focus) -->
+    @if (!fullScreenMode) {
     <div
       class="flex shrink-0 items-center justify-between rounded-md border-b-2 border-line pb-2"
     >
       <div class="flex gap-4">
-        <div class="h-20 w-20 shrink-0 rounded-md border-2 border-line bg-main p-2">
+        <div
+          class="h-20 w-20 shrink-0 rounded-md border-2 border-line bg-main p-2"
+        >
           <img
             [src]="getIconPath(topicDetail.icon)"
             alt="Imagen del topic"
@@ -21,7 +24,7 @@
         </div>
 
         <div class="flex flex-col gap-1">
-          <!-- breadcrumb -->
+          <!-- Breadcrumb: topic > subtopic -->
           <div class="flex items-center gap-2">
             <h1 class="m-0 text-xl font-bold text-text">
               {{ topicDetail.title | titlecase }}
@@ -32,13 +35,11 @@
             </p>
           </div>
 
-          <!-- descripción del topic principal -->
           <p class="m-0 text-sm text-text">
             {{ topicDetail.description | titlecase }}
           </p>
 
-          <!-- tags del subtopic seleccionado -->
-          <!-- @if (selectedSubtopic?.topicTags?.length) { -->
+          <!-- Tags del topic + subtopic seleccionado -->
           <div class="flex flex-wrap gap-2">
             @for (topicTag of joinTags(); track $index) {
             <span
@@ -48,10 +49,10 @@
             >
             }
           </div>
-          <!-- } -->
         </div>
       </div>
 
+      <!-- Menú de acciones del topic (editar / eliminar) -->
       <div class="flex gap-2">
         <p-menu #menu [model]="items" [popup]="true">
           <ng-template #item let-item>
@@ -61,30 +62,36 @@
             </a>
           </ng-template>
         </p-menu>
+        <!-- Abrir menú del topic -->
         <button
           type="button"
           pButton
           severity="secondary"
           [outlined]="true"
           iconOnly
-          aria-label="Apps"
+          aria-label="Menú del topic"
           (click)="menu.toggle($event)"
         >
           <i class="pi pi-ellipsis-v"></i>
         </button>
       </div>
     </div>
+    }
 
-    <!-- CONTENIDO PRINCIPAL -->
+    <!-- Contenido: markdown + panel de subtopics -->
     <div class="flex min-h-0 flex-1 gap-4">
       <div class="flex min-h-0 min-w-0 flex-1 flex-col">
         <app-topic-content-component
           class="block h-full min-h-0"
           [subtopic]="selectedSubtopic"
+          [fullScreenMode]="fullScreenMode"
           (contentSaved)="onSubtopicContentSaved($event)"
+          (fullScreenModeChanged)="onFullScreenModeChanged()"
         />
       </div>
 
+      <!-- Panel de subtopics (oculto en modo focus) -->
+      @if (!fullScreenMode) {
       <div
         class="h-full w-sidebar shrink-0 overflow-y-auto rounded-md border-2 border-line bg-main p-4"
       >
@@ -94,6 +101,7 @@
           (deletedSubtopic)="onDeletedSubtopic($event)"
         />
       </div>
+      }
     </div>
   </div>
   }

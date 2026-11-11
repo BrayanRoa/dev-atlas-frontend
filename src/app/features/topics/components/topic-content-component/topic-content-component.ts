@@ -28,8 +28,7 @@ type ImportMode = 'replace' | 'append';
 
 @Component({
   selector: 'app-topic-content-component',
-  imports: [ButtonModule, MarkdownModule, ConfirmDialogModule, ToastModule, TooltipModule
-  ],
+  imports: [ButtonModule, MarkdownModule, ConfirmDialogModule, ToastModule, TooltipModule],
   templateUrl: './topic-content-component.html',
   styleUrl: './topic-content-component.css',
   providers: [ConfirmationService, MessageService],
@@ -37,10 +36,16 @@ type ImportMode = 'replace' | 'append';
 export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   @Input()
+  fullScreenMode = false;
+
+  @Input()
   subtopic: ITopic | null = null;
 
   @Output()
   contentSaved = new EventEmitter<ITopic>();
+
+  @Output()
+  fullScreenModeChanged = new EventEmitter<void>();
 
   @ViewChild('editorHost')
   editorHost?: ElementRef<HTMLDivElement>;
@@ -73,6 +78,10 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
     this.destroyEditor();
     this.isEditing = false;
     this.scheduleInitEditor();
+  }
+
+  onToggleFullScreen(): void {
+    this.fullScreenModeChanged.emit();
   }
 
   onEdit(): void {
@@ -124,13 +133,6 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
         });
       },
     });
-  }
-
-  getIconPath(icon: string): string {
-    if (icon === 'default-topic.png') {
-      return 'assets/images/default-topic.png';
-    }
-    return `assets/images/${icon}`;
   }
 
   private scheduleInitEditor(): void {
