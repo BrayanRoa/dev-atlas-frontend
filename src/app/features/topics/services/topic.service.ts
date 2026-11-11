@@ -36,14 +36,20 @@ export class TopicService {
   }
 
   /**
-   * Actualiza un topic existente
-   * @param topic - El topic a actualizar
-   * @param topicId - El ID del topic a actualizar
-   * @returns Observable<ITopicCreateResponse>
+   * Actualiza un topic existente.
+   * notify=false evita disparar topicSaved (útil al guardar solo el markdown).
    */
-  updateTopic(topic: ITopicCreatePayload, topicId: string): Observable<ITopicCreateResponse> {
+  updateTopic(
+    topic: ITopicCreatePayload,
+    topicId: string,
+    notify = true,
+  ): Observable<ITopicCreateResponse> {
     return this.http.put<ITopicCreateResponse>(`${this.baseUrl}/update/${topicId}`, topic).pipe(
-      tap(()=> this.topicSaved.update(prev => prev + 1))
+      tap(() => {
+        if (notify) {
+          this.topicSaved.update((prev) => prev + 1);
+        }
+      }),
     );
   }
 

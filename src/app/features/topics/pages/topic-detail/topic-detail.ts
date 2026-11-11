@@ -1,56 +1,66 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, DestroyRef, effect, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TitleCasePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { MenuItem } from 'primeng/api';
 import { MenuModule } from 'primeng/menu';
+import { switchMap } from 'rxjs';
 
 import { ITopic } from '../../interfaces/topics.interfaces';
 import { TopicService } from '../../services/topic.service';
 import { TopicDialogService } from '../../services/topic-dialog.service';
 import { SubtopicsMenu } from '../../components/subtopics-menu/subtopics-menu';
+import { TopicContentComponent } from '../../components/topic-content-component/topic-content-component';
 import { ModalConfirmComponent } from '../../../../shared/components/modal-confirm-component/modal-confirm-component';
 import { IModalConfirmation } from '../../../../shared/interfaces/modal-confirmation.interface';
-import { switchMap } from 'rxjs';
-import { TopicContentComponent } from '../../components/topic-content-component/topic-content-component';
+import { ITag } from '../../../tags/interfaces/tag.interface';
 
 @Component({
   selector: 'app-topic-detail',
   imports: [
-    TitleCasePipe, 
-    ButtonModule, 
-    MenuModule, 
-    ModalConfirmComponent, 
-    SubtopicsMenu, 
+    TitleCasePipe,
+    ButtonModule,
+    MenuModule,
+    ModalConfirmComponent,
+    SubtopicsMenu,
     TopicContentComponent,
   ],
   templateUrl: './topic-detail.html',
   styleUrl: './topic-detail.css',
 })
 export class TopicDetail {
-
-  // Servicios
+  // ─── Servicios ───────────────────────────────────────────────
   readonly topicService = inject(TopicService);
   readonly route = inject(ActivatedRoute);
   readonly topicDialogService = inject(TopicDialogService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  // Datos del topic
+  // ─── Estado del topic padre ──────────────────────────────────
   topicId = '';
   topicDetail: ITopic | null = null;
+
+  // ─── Estado de subtopics ─────────────────────────────────────
   subtopics: ITopic[] = [];
   selectedSubtopic: ITopic | null = null;
+  /** Se conserva aparte para no perder la selección al recargar tras un save. */
+  selectedSubtopicId: string | null = null;
 
-  // Menú y confirmación
+  // ─── UI ──────────────────────────────────────────────────────
+  fullScreenMode = false;
+  joinedTags: ITag[] = [];
   items: MenuItem[] | undefined;
   visibleModalConfirmation = false;
   modalConfirmationConfig: IModalConfirmation = {
     title: 'Eliminar topic',
-    message: '¿Estás seguro de querer eliminar este topic? Esta acción no se puede deshacer.',
+    message:
+      '¿Estás seguro de querer eliminar este topic? Esta acción no se puede deshacer.',
     icon: 'pi pi-trash',
     confirmButtonText: 'Eliminar',
     cancelButtonText: 'Cancelar',
   };
 
+  // ─── Ciclo de vida ───────────────────────────────────────────
   constructor() {
     effect(() => {
       if (this.topicService.topicSaved() === 0) return;
@@ -59,37 +69,61 @@ export class TopicDetail {
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe((param) => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((param) => {
       this.topicId = param['id'];
+      this.selectedSubtopicId = null;
+      this.selectedSubtopic = null;
+      this.fullScreenMode = false;
       this.loadTopic();
       this.loadMenuItems();
     });
   }
 
-  // Carga del topic
-
+  // ─── Carga de datos ──────────────────────────────────────────
   loadTopic(): void {
-    this.topicService.getTopic(this.topicId).pipe(
-      switchMap((topicResponse) => {
-        this.topicDetail = topicResponse.data ?? null;
-        return this.topicService.getSubtopics(this.topicId);
-      }),
-    ).subscribe((subtopicsResponse) => {
-      this.subtopics = subtopicsResponse.data ?? [];
-      this.selectedSubtopic = this.subtopics[0] ?? null;
-    });
+    const preserveId = this.selectedSubtopicId ?? this.selectedSubtopic?.id ?? null;
+
+    this.topicService
+      .getTopic(this.topicId)
+      .pipe(
+        switchMap((topicResponse) => {
+          this.topicDetail = topicResponse.data ?? null;
+          return this.topicService.getSubtopics(this.topicId);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((subtopicsResponse) => {
+        this.applySubtopics(subtopicsResponse.data ?? [], preserveId);
+      });
   }
 
-  getIconPath(icon: string): string {
-    if (icon === 'default-topic.png') {
-      return 'assets/images/default-topic.png';
-    }
-    return `assets/images/${icon}`;
+  private reloadSubtopics(deletedId?: string): void {
+    const preserveId =
+      deletedId && this.selectedSubtopicId === deletedId
+        ? null
+        : this.selectedSubtopicId;
+
+    this.topicService
+      .getSubtopics(this.topicId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((res) => {
+        this.applySubtopics(res.data ?? [], preserveId);
+      });
   }
 
-  // Menú
+  private applySubtopics(subtopics: ITopic[], preserveId: string | null): void {
+    this.subtopics = subtopics;
 
-  loadMenuItems(): void {
+    const kept = preserveId
+      ? subtopics.find((subtopic) => String(subtopic.id) === String(preserveId))
+      : undefined;
+
+    this.selectedSubtopic = kept ?? subtopics[0] ?? null;
+    this.selectedSubtopicId = this.selectedSubtopic?.id ?? null;
+    this.refreshJoinedTags();
+  }
+
+  private loadMenuItems(): void {
     this.items = [
       {
         label: 'Editar',
@@ -104,14 +138,11 @@ export class TopicDetail {
     ];
   }
 
-  // Editar
-
+  // ─── Acciones del topic principal ────────────────────────────
   onEditTopic(): void {
     if (!this.topicDetail) return;
     this.topicDialogService.show('edit', 'Editar topic', this.topicDetail);
   }
-
-  // Eliminar
 
   onDeleteTopic(): void {
     this.visibleModalConfirmation = true;
@@ -120,18 +151,74 @@ export class TopicDetail {
   onConfirmDeleteTopic(): void {
     this.visibleModalConfirmation = false;
     if (!this.topicDetail) return;
-    this.topicService.deleteTopic(this.topicDetail.id).subscribe({
-      next: () => {
-        this.topicDetail = null;
-      },
-    });
+
+    this.topicService
+      .deleteTopic(this.topicDetail.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.topicDetail = null;
+          this.selectedSubtopic = null;
+          this.selectedSubtopicId = null;
+          this.subtopics = [];
+          this.joinedTags = [];
+          this.fullScreenMode = false;
+        },
+      });
   }
 
   onCancelDeleteTopic(): void {
     this.visibleModalConfirmation = false;
   }
 
+  // ─── Acciones de subtopics ───────────────────────────────────
   onSelectSubtopic(subtopic: ITopic): void {
     this.selectedSubtopic = subtopic;
+    this.selectedSubtopicId = subtopic.id;
+    this.refreshJoinedTags();
+  }
+
+  onSubtopicContentSaved(updated: ITopic): void {
+    this.selectedSubtopicId = updated.id;
+    this.selectedSubtopic = updated;
+    this.subtopics = this.subtopics.map((subtopic) =>
+      String(subtopic.id) === String(updated.id) ? updated : subtopic,
+    );
+    this.refreshJoinedTags();
+  }
+
+  onDeletedSubtopic(subtopic: ITopic): void {
+    const deletedId = subtopic.id;
+    this.topicService
+      .deleteTopic(deletedId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.reloadSubtopics(deletedId),
+      });
+  }
+
+  // ─── Modo focus ──────────────────────────────────────────────
+  onFullScreenModeChanged(): void {
+    this.fullScreenMode = !this.fullScreenMode;
+  }
+
+  // ─── Helpers de UI ───────────────────────────────────────────
+  getIconPath(icon: string): string {
+    if (icon === 'default-topic.png') {
+      return 'assets/images/default-topic.png';
+    }
+    return `assets/images/${icon}`;
+  }
+
+  private refreshJoinedTags(): void {
+    const parentTags = this.topicDetail?.topicTags.map((t) => t.tag) ?? [];
+    const subtopicTags =
+      this.selectedSubtopic?.topicTags.map((t) => t.tag) ?? [];
+
+    this.joinedTags = [
+      ...new Map(
+        [...parentTags, ...subtopicTags].map((tag) => [tag.id, tag]),
+      ).values(),
+    ];
   }
 }

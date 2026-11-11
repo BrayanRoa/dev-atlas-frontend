@@ -34,7 +34,9 @@
             ],
             "styles": [
               "src/styles.css",
-              "node_modules/primeicons/primeicons.css"
+              "node_modules/primeicons/primeicons.css",
+              "node_modules/@toast-ui/editor/dist/toastui-editor.css",
+              "node_modules/@toast-ui/editor/dist/theme/toastui-editor-dark.css"
             ]
           },
           "configurations": {

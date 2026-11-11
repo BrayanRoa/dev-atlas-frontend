@@ -11,6 +11,7 @@ import { TopicService } from '../../../topics/services/topic.service';
 import { CreateEditModal } from '../../../topics/components/create-edit-modal/create-edit-modal';
 import { FormWorkspaceComponent } from '../../../workspaces/components/form-workspace-component/form-workspace-component';
 import { WorkSpaceService } from '../../../workspaces/services/work-space.service';
+import { AuthService } from '../../../auth/services/auth.service';
 import { ITopicListItem } from '../../../topics/interfaces/topics.interfaces';
 import { IWorkspace, IWorkspaceCreateRequest } from '../../../workspaces/interfaces/workspace.interface';
 
@@ -45,7 +46,19 @@ export class SidebarComponent implements OnInit {
   private readonly workSpaceService = inject(WorkSpaceService);
   private readonly topicService = inject(TopicService);
   private readonly messageService = inject(MessageService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+
+  get userDisplayName(): string {
+    return localStorage.getItem('user_name')?.trim() || 'Usuario';
+  }
+
+  get userInitials(): string {
+    const parts = this.userDisplayName.split(/\s+/).filter(Boolean);
+    if (!parts.length) return 'U';
+    if (parts.length === 1) return parts[0].slice(0, 1).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
 
   constructor() {
     effect(() => {
@@ -61,6 +74,11 @@ export class SidebarComponent implements OnInit {
   /** Abre la página de tags del workspace. El botón de crear un tag vive ahí. */
   onOpenTags(): void {
     this.router.navigate(['/dashboard/tags']);
+  }
+
+  onLogout(): void {
+    this.authService.logout();
+    this.router.navigate(['/auth/login']);
   }
 
   // Workspaces: abrir la lista y elegir uno
@@ -182,7 +200,9 @@ export class SidebarComponent implements OnInit {
     if (!topics.length) {
       this.topics = [];
       this.applyTopic(null);
-      this.router.navigate(['/dashboard/topic/empty']);
+      if (!this.router.url.includes('/dashboard/topic/empty')) {
+        this.router.navigate(['/dashboard/topic/empty']);
+      }
       return;
     }
 
@@ -196,7 +216,12 @@ export class SidebarComponent implements OnInit {
       : topics[0];
 
     this.applyTopic(topicToSelect ?? null);
-    this.router.navigate(['/dashboard/topic', this.topicSelected?.id ?? '']);
+
+    const targetId = this.topicSelected?.id ?? '';
+    const alreadyOnTopic = this.router.url.includes(`/dashboard/topic/${targetId}`);
+    if (!alreadyOnTopic) {
+      this.router.navigate(['/dashboard/topic', targetId]);
+    }
   }
 
   private applyTopic(topic: ITopicListItem | null): void {

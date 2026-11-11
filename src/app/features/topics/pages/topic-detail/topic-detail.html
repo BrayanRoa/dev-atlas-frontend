@@ -1,91 +1,112 @@
 <div
-  class="flex justify-center items-center h-full w-full bg-panel border-2 border-line rounded-md p-4"
+  class="flex h-full min-h-0 w-full flex-col rounded-md border-2 border-line bg-panel p-4"
 >
   @if (!topicDetail) {
-  <div class="flex justify-center items-center h-full w-full">
+  <div class="flex h-full w-full items-center justify-center">
     <span>No hay topic seleccionado</span>
   </div>
   } @else {
-  <div class="flex flex-col gap-4 h-full w-full">
-    <!-- BREADCRUMB -->
-    <!-- <p-breadcrumb [model]="breadCrum" [home]="home" /> -->
-
-    <!-- ENCABEZADO -->
+  <div class="flex h-full min-h-0 w-full flex-col gap-4">
+    <!-- Encabezado del topic (oculto en modo focus) -->
+    @if (!fullScreenMode) {
     <div
-      class="flex justify-between items-center border-b-2 border-line rounded-md pb-2"
+      class="flex shrink-0 items-center justify-between rounded-md border-b-2 border-line pb-2"
     >
-      <div class="col-span-10 flex gap-4">
-        <!-- IMAGEN DEL TOPIC -->
-        <div class="w-20 h-20 bg-main rounded-md border-2 border-line p-2">
+      <div class="flex gap-4">
+        <div
+          class="h-20 w-20 shrink-0 rounded-md border-2 border-line bg-main p-2"
+        >
           <img
             [src]="getIconPath(topicDetail.icon)"
             alt="Imagen del topic"
-            class="w-full h-full object-cover rounded-md"
+            class="h-full w-full rounded-md object-cover"
           />
         </div>
 
-        <!-- TITULO DEL TOPIC E INFORMACION GENERAL -->
-        <div class="flex flex-col">
-          <h1 class="text-text font-bold text-2xl">
-            {{ topicDetail.title | titlecase }}
-          </h1>
-          <p class="text-text text-sm">
+        <div class="flex flex-col gap-1">
+          <!-- Breadcrumb: topic > subtopic -->
+          <div class="flex items-center gap-2">
+            <p class="m-0 text-xl font-bold text-text">
+              {{ topicDetail.title | titlecase }}
+            </p>
+            <i class="pi pi-angle-right" [hidden]="selectedSubtopic === null"></i>
+            <p class="m-0 text-xl font-bold text-text">
+              {{ selectedSubtopic?.title | titlecase }}
+            </p>
+          </div>
+
+          <p class="m-0 text-sm text-text">
             {{ topicDetail.description | titlecase }}
           </p>
 
-          <div class="flex gap-2">
-            @for (tag of topicDetail.topicTags; track $index) {
+          <!-- Tags del topic + subtopic seleccionado -->
+          <div class="flex flex-wrap gap-2">
+            @for (topicTag of joinedTags; track topicTag.id) {
             <span
-              class="text-text text-sm rounded-md px-2 py-1 border border-line font-bold"
-              [class]="tag.tag.color"
-              >{{ tag.tag.name | titlecase }}</span
+              class="rounded-md border border-line px-2 py-1 text-xs font-bold text-text"
+              [class]="topicTag.color"
+              >{{ topicTag.name | titlecase }}</span
             >
             }
           </div>
         </div>
       </div>
 
-      <!-- ACCIONES DEL TOPIC -->
-      <div class="col-span-2 flex gap-2">
+      <!-- Menú de acciones del topic (editar / eliminar) -->
+      <div class="flex gap-2">
         <p-menu #menu [model]="items" [popup]="true">
           <ng-template #item let-item>
-            <a pRipple class="flex items-center px-2.5 py-1.5 cursor-pointer">
+            <a pRipple class="flex cursor-pointer items-center px-2.5 py-1.5">
               <i class="pi pi-{{ item.icon }}"></i>
               <span class="ms-2 text-sm">{{ item.label }}</span>
             </a>
           </ng-template>
         </p-menu>
+        <!-- Abrir menú del topic -->
         <button
           type="button"
           pButton
           severity="secondary"
           [outlined]="true"
           iconOnly
-          aria-label="Apps"
+          aria-label="Menú del topic"
           (click)="menu.toggle($event)"
         >
           <i class="pi pi-ellipsis-v"></i>
         </button>
       </div>
     </div>
+    }
 
-    <!-- CONTENIDO PRICIPAL -->
-    <div class="flex gap-4 h-full w-full">
-      <!-- CONTENIDO PRINCIPAL -->
-      <div class="flex-1 h-full w-full gap-4">
-        <app-topic-content-component [subtopic]="selectedSubtopic" />
+    <!-- Contenido: markdown + panel de subtopics -->
+    <div class="flex min-h-0 flex-1 gap-4">
+      <div class="flex min-h-0 min-w-0 flex-1 flex-col">
+        <app-topic-content-component
+          class="block h-full min-h-0"
+          [topic]="topicDetail"
+          [subtopic]="selectedSubtopic"
+          [tags]="joinedTags"
+          [fullScreenMode]="fullScreenMode"
+          (contentSaved)="onSubtopicContentSaved($event)"
+          (fullScreenModeChanged)="onFullScreenModeChanged()"
+        />
       </div>
 
-
-      <!-- BARRA LATERAL -->
+      <!-- Panel de subtopics (oculto en modo focus) -->
+      @if (!fullScreenMode) {
       <div
-        class="w-sidebar h-full bg-main p-4 border-2 border-line rounded-md overflow-y-auto"
+        class="h-full w-sidebar shrink-0 overflow-y-auto rounded-md border-2 border-line bg-main p-4"
       >
-        <app-subtopics-menu [subtopicsList]="subtopics" (selectedSubtopic)="onSelectSubtopic($event)" />
+        <app-subtopics-menu
+          [subtopicsList]="subtopics"
+          [selectedSubtopicId]="selectedSubtopicId"
+          (selectedSubtopic)="onSelectSubtopic($event)"
+          (deletedSubtopic)="onDeletedSubtopic($event)"
+        />
       </div>
+      }
     </div>
   </div>
-
   }
 </div>
 
@@ -94,4 +115,4 @@
   [config]="modalConfirmationConfig"
   (confirm)="onConfirmDeleteTopic()"
   (cancel)="onCancelDeleteTopic()"
-/>  
+/>
