@@ -17,11 +17,11 @@ import Editor from '@toast-ui/editor';
 import { ITopic, ITopicCreatePayload } from '../../interfaces/topics.interfaces';
 import { TopicService } from '../../services/topic.service';
 
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
 
 // Ngx Markdown imports
 import { MarkdownModule } from 'ngx-markdown';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { TitleCasePipe } from '@angular/common';
@@ -30,10 +30,10 @@ type ImportMode = 'replace' | 'append';
 
 @Component({
   selector: 'app-topic-content-component',
-  imports: [ButtonModule, MarkdownModule, ConfirmDialogModule, ToastModule, TooltipModule, TitleCasePipe],
+  imports: [ButtonModule, MarkdownModule, DialogModule, ToastModule, TooltipModule, TitleCasePipe],
   templateUrl: './topic-content-component.html',
   styleUrl: './topic-content-component.css',
-  providers: [ConfirmationService, MessageService],
+  providers: [MessageService],
 })
 export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestroy {
 
@@ -60,9 +60,10 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
 
   isEditing = false;
   backupContent = '';
+  importDialogVisible = false;
+  private pendingImport = '';
 
   private readonly topicService = inject(TopicService);
-  private readonly confirmationService = inject(ConfirmationService);
   private readonly messageService = inject(MessageService);
 
   private editor: Editor | null = null;
@@ -119,7 +120,8 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
       tags: this.subtopic.topicTags.map((item) => item.tagId),
     };
 
-    this.topicService.updateTopic(payload, this.subtopic.id).subscribe({
+    // notify=false: el padre ya actualiza con contentSaved; no hace falta recargar todo el detail
+    this.topicService.updateTopic(payload, this.subtopic.id, false).subscribe({
       next: (response) => {
         this.subtopic = response.data;
         this.isEditing = false;
@@ -173,6 +175,32 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
     const file = input.files?.[0];
     if (!file) return;
 
+    const maxSizeBytes = 1 * 1024 * 1024; // 1 MB
+    const isMarkdown =
+      file.name.toLowerCase().endsWith('.md') ||
+      file.type === 'text/markdown' ||
+      file.type === 'text/x-markdown';
+
+    if (!isMarkdown) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Archivo no válido',
+        detail: 'Solo se permiten archivos .md',
+      });
+      input.value = '';
+      return;
+    }
+
+    if (file.size > maxSizeBytes) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Archivo muy grande',
+        detail: 'El archivo no puede superar 1 MB',
+      });
+      input.value = '';
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => {
       const imported = String(reader.result ?? '');
@@ -190,24 +218,27 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
   }
 
   private askImportMode(imported: string): void {
-    this.confirmationService.confirm({
-      message: '¿Quieres reemplazar el contenido actual o añadir el archivo al final?',
-      header: 'Cargar archivo Markdown',
-      icon: 'pi pi-file',
-      // Sin cerrar con X/Escape: en ConfirmDialog eso dispara reject y añadiría sin querer.
-      closable: false,
-      closeOnEscape: false,
-      acceptButtonProps: {
-        label: 'Reemplazar',
-      },
-      rejectButtonProps: {
-        label: 'Añadir al final',
-        severity: 'secondary',
-        outlined: true,
-      },
-      accept: () => this.applyImportedMarkdown(imported, 'replace'),
-      reject: () => this.applyImportedMarkdown(imported, 'append'),
-    });
+    this.pendingImport = imported;
+    this.importDialogVisible = true;
+  }
+
+  onImportReplace(): void {
+    this.applyImportedMarkdown(this.pendingImport, 'replace');
+    this.closeImportDialog();
+  }
+
+  onImportAppend(): void {
+    this.applyImportedMarkdown(this.pendingImport, 'append');
+    this.closeImportDialog();
+  }
+
+  onImportCancel(): void {
+    this.closeImportDialog();
+  }
+
+  private closeImportDialog(): void {
+    this.importDialogVisible = false;
+    this.pendingImport = '';
   }
 
   private applyImportedMarkdown(imported: string, mode: ImportMode): void {

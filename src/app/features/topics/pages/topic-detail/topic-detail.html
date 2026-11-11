@@ -41,7 +41,7 @@
 
           <!-- Tags del topic + subtopic seleccionado -->
           <div class="flex flex-wrap gap-2">
-            @for (topicTag of joinTags(); track $index) {
+            @for (topicTag of joinedTags; track topicTag.id) {
             <span
               class="rounded-md border border-line px-2 py-1 text-xs font-bold text-text"
               [class]="topicTag.color"
@@ -85,7 +85,7 @@
           class="block h-full min-h-0"
           [topic]="topicDetail"
           [subtopic]="selectedSubtopic"
-          [tags]="joinTags()"
+          [tags]="joinedTags"
           [fullScreenMode]="fullScreenMode"
           (contentSaved)="onSubtopicContentSaved($event)"
           (fullScreenModeChanged)="onFullScreenModeChanged()"
@@ -99,6 +99,7 @@
       >
         <app-subtopics-menu
           [subtopicsList]="subtopics"
+          [selectedSubtopicId]="selectedSubtopicId"
           (selectedSubtopic)="onSelectSubtopic($event)"
           (deletedSubtopic)="onDeletedSubtopic($event)"
         />

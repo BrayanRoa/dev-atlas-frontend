@@ -4,9 +4,6 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
-import { InputTextModule } from 'primeng/inputtext';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
 import { catchError, of, tap } from 'rxjs';
 
 import { TopicDialogService } from '../../../topics/services/topic-dialog.service';
@@ -28,9 +25,6 @@ import { IWorkspace, IWorkspaceCreateRequest } from '../../../workspaces/interfa
     CreateEditModal,
     RouterLink,
     RouterLinkActive,
-    InputTextModule,
-    IconFieldModule,
-    InputIconModule,
   ],
   templateUrl: './sidebar-component.html',
   styleUrl: './sidebar-component.css',
@@ -206,7 +200,9 @@ export class SidebarComponent implements OnInit {
     if (!topics.length) {
       this.topics = [];
       this.applyTopic(null);
-      this.router.navigate(['/dashboard/topic/empty']);
+      if (!this.router.url.includes('/dashboard/topic/empty')) {
+        this.router.navigate(['/dashboard/topic/empty']);
+      }
       return;
     }
 
@@ -220,7 +216,12 @@ export class SidebarComponent implements OnInit {
       : topics[0];
 
     this.applyTopic(topicToSelect ?? null);
-    this.router.navigate(['/dashboard/topic', this.topicSelected?.id ?? '']);
+
+    const targetId = this.topicSelected?.id ?? '';
+    const alreadyOnTopic = this.router.url.includes(`/dashboard/topic/${targetId}`);
+    if (!alreadyOnTopic) {
+      this.router.navigate(['/dashboard/topic', targetId]);
+    }
   }
 
   private applyTopic(topic: ITopicListItem | null): void {

@@ -40,8 +40,8 @@
         [hidden]="subtopic === null"
       />
 
-      <!-- Importar .md (solo en edición) -->
-      @if (subtopic && isEditing) {
+      <!-- Importar .md -->
+      @if (subtopic) {
       <input
         #fileInput
         type="file"
@@ -100,7 +100,6 @@
     <markdown
       class="prose prose-invert max-w-none"
       [data]="subtopic.content"
-      [disableSanitizer]="true"
     ></markdown>
   </div>
   }
@@ -117,4 +116,34 @@
   <p-toast />
 </div>
 
-<p-confirmdialog />
+<!-- Elegir: reemplazar / añadir / cancelar al importar .md -->
+<p-dialog
+  header="Cargar archivo Markdown"
+  [(visible)]="importDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: '28rem' }"
+>
+  <p class="m-0 text-text">
+    ¿Quieres reemplazar el contenido actual o añadir el archivo al final?
+  </p>
+
+  <ng-template #footer>
+    <!-- Cancelar importación -->
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      (onClick)="onImportCancel()"
+    />
+    <!-- Añadir al final -->
+    <p-button
+      label="Añadir al final"
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="onImportAppend()"
+    />
+    <!-- Reemplazar todo -->
+    <p-button label="Reemplazar" (onClick)="onImportReplace()" />
+  </ng-template>
+</p-dialog>

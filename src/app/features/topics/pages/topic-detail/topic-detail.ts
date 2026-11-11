@@ -1,4 +1,5 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, DestroyRef, effect, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TitleCasePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -33,6 +34,7 @@ export class TopicDetail {
   readonly topicService = inject(TopicService);
   readonly route = inject(ActivatedRoute);
   readonly topicDialogService = inject(TopicDialogService);
+  private readonly destroyRef = inject(DestroyRef);
 
   // ─── Estado del topic padre ──────────────────────────────────
   topicId = '';
@@ -42,10 +44,11 @@ export class TopicDetail {
   subtopics: ITopic[] = [];
   selectedSubtopic: ITopic | null = null;
   /** Se conserva aparte para no perder la selección al recargar tras un save. */
-  private selectedSubtopicId: string | null = null;
+  selectedSubtopicId: string | null = null;
 
   // ─── UI ──────────────────────────────────────────────────────
   fullScreenMode = false;
+  joinedTags: ITag[] = [];
   items: MenuItem[] | undefined;
   visibleModalConfirmation = false;
   modalConfirmationConfig: IModalConfirmation = {
@@ -66,7 +69,7 @@ export class TopicDetail {
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe((param) => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((param) => {
       this.topicId = param['id'];
       this.selectedSubtopicId = null;
       this.selectedSubtopic = null;
@@ -87,6 +90,7 @@ export class TopicDetail {
           this.topicDetail = topicResponse.data ?? null;
           return this.topicService.getSubtopics(this.topicId);
         }),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((subtopicsResponse) => {
         this.applySubtopics(subtopicsResponse.data ?? [], preserveId);
@@ -99,9 +103,12 @@ export class TopicDetail {
         ? null
         : this.selectedSubtopicId;
 
-    this.topicService.getSubtopics(this.topicId).subscribe((res) => {
-      this.applySubtopics(res.data ?? [], preserveId);
-    });
+    this.topicService
+      .getSubtopics(this.topicId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((res) => {
+        this.applySubtopics(res.data ?? [], preserveId);
+      });
   }
 
   private applySubtopics(subtopics: ITopic[], preserveId: string | null): void {
@@ -113,6 +120,7 @@ export class TopicDetail {
 
     this.selectedSubtopic = kept ?? subtopics[0] ?? null;
     this.selectedSubtopicId = this.selectedSubtopic?.id ?? null;
+    this.refreshJoinedTags();
   }
 
   private loadMenuItems(): void {
@@ -144,15 +152,19 @@ export class TopicDetail {
     this.visibleModalConfirmation = false;
     if (!this.topicDetail) return;
 
-    this.topicService.deleteTopic(this.topicDetail.id).subscribe({
-      next: () => {
-        this.topicDetail = null;
-        this.selectedSubtopic = null;
-        this.selectedSubtopicId = null;
-        this.subtopics = [];
-        this.fullScreenMode = false;
-      },
-    });
+    this.topicService
+      .deleteTopic(this.topicDetail.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.topicDetail = null;
+          this.selectedSubtopic = null;
+          this.selectedSubtopicId = null;
+          this.subtopics = [];
+          this.joinedTags = [];
+          this.fullScreenMode = false;
+        },
+      });
   }
 
   onCancelDeleteTopic(): void {
@@ -163,6 +175,7 @@ export class TopicDetail {
   onSelectSubtopic(subtopic: ITopic): void {
     this.selectedSubtopic = subtopic;
     this.selectedSubtopicId = subtopic.id;
+    this.refreshJoinedTags();
   }
 
   onSubtopicContentSaved(updated: ITopic): void {
@@ -171,13 +184,17 @@ export class TopicDetail {
     this.subtopics = this.subtopics.map((subtopic) =>
       String(subtopic.id) === String(updated.id) ? updated : subtopic,
     );
+    this.refreshJoinedTags();
   }
 
   onDeletedSubtopic(subtopic: ITopic): void {
     const deletedId = subtopic.id;
-    this.topicService.deleteTopic(deletedId).subscribe({
-      next: () => this.reloadSubtopics(deletedId),
-    });
+    this.topicService
+      .deleteTopic(deletedId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.reloadSubtopics(deletedId),
+      });
   }
 
   // ─── Modo focus ──────────────────────────────────────────────
@@ -193,12 +210,12 @@ export class TopicDetail {
     return `assets/images/${icon}`;
   }
 
-  joinTags(): ITag[] {
+  private refreshJoinedTags(): void {
     const parentTags = this.topicDetail?.topicTags.map((t) => t.tag) ?? [];
     const subtopicTags =
       this.selectedSubtopic?.topicTags.map((t) => t.tag) ?? [];
 
-    return [
+    this.joinedTags = [
       ...new Map(
         [...parentTags, ...subtopicTags].map((tag) => [tag.id, tag]),
       ).values(),

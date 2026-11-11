@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, SimpleChanges } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 
@@ -15,10 +15,14 @@ import { IModalConfirmation } from '../../../../shared/interfaces/modal-confirma
   styleUrl: './subtopics-menu.css',
 })
 export class SubtopicsMenu {
+  
   // ─── Inputs / Outputs ────────────────────────────────────────
   @Input()
   subtopicsList: ITopic[] = [];
 
+  @Input()
+  selectedSubtopicId: string | null = null;
+  
   @Output()
   selectedSubtopic = new EventEmitter<ITopic>();
 
