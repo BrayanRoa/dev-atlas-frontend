@@ -2,9 +2,11 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   Input,
   OnChanges,
   OnDestroy,
+  Output,
   SimpleChanges,
   ViewChild,
   inject,
@@ -36,6 +38,9 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
 
   @Input()
   subtopic: ITopic | null = null;
+
+  @Output()
+  contentSaved = new EventEmitter<ITopic>();
 
   @ViewChild('editorHost')
   editorHost?: ElementRef<HTMLDivElement>;
@@ -103,16 +108,20 @@ export class TopicContentComponent implements AfterViewInit, OnChanges, OnDestro
         this.isEditing = false;
         this.setBackupContent();
         this.destroyEditor();
-        this.messageService.add(
-          { 
-            severity: 'success', 
-            summary: 'Topic Actualizado', 
-            detail: 'Topic actualizado correctamente',
-            life: 3000
-          });
+        this.contentSaved.emit(response.data);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Topic Actualizado',
+          detail: 'Topic actualizado correctamente',
+          life: 3000,
+        });
       },
-      error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al actualizar el topic' });
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Error al actualizar el topic',
+        });
       },
     });
   }

@@ -41,6 +41,8 @@ export class TopicDetail {
   // ─── Estado de subtopics ─────────────────────────────────────
   subtopics: ITopic[] = [];
   selectedSubtopic: ITopic | null = null;
+  /** Se conserva aparte para no perder la selección al recargar tras un save. */
+  private selectedSubtopicId: string | null = null;
 
   // ─── Menú del topic ──────────────────────────────────────────
   items: MenuItem[] | undefined;
@@ -67,6 +69,8 @@ export class TopicDetail {
   ngOnInit(): void {
     this.route.params.subscribe((param) => {
       this.topicId = param['id'];
+      this.selectedSubtopicId = null;
+      this.selectedSubtopic = null;
       this.loadTopic();
       this.loadMenuItems();
     });
@@ -74,6 +78,9 @@ export class TopicDetail {
 
   // ─── Carga de datos ──────────────────────────────────────────
   loadTopic(): void {
+    // Capturar antes del HTTP: al volver el response, selectedSubtopic puede haber cambiado.
+    const preserveId = this.selectedSubtopicId ?? this.selectedSubtopic?.id ?? null;
+
     this.topicService
       .getTopic(this.topicId)
       .pipe(
@@ -83,18 +90,30 @@ export class TopicDetail {
         }),
       )
       .subscribe((subtopicsResponse) => {
-        this.subtopics = subtopicsResponse.data ?? [];
-        this.selectedSubtopic = this.subtopics[0] ?? null;
+        this.applySubtopics(subtopicsResponse.data ?? [], preserveId);
       });
   }
 
   private reloadSubtopics(deletedId?: string): void {
+    const preserveId =
+      deletedId && this.selectedSubtopicId === deletedId
+        ? null
+        : this.selectedSubtopicId;
+
     this.topicService.getSubtopics(this.topicId).subscribe((res) => {
-      this.subtopics = res.data ?? [];
-      if (!deletedId || this.selectedSubtopic?.id === deletedId) {
-        this.selectedSubtopic = this.subtopics[0] ?? null;
-      }
+      this.applySubtopics(res.data ?? [], preserveId);
     });
+  }
+
+  private applySubtopics(subtopics: ITopic[], preserveId: string | null): void {
+    this.subtopics = subtopics;
+
+    const kept = preserveId
+      ? subtopics.find((subtopic) => String(subtopic.id) === String(preserveId))
+      : undefined;
+
+    this.selectedSubtopic = kept ?? subtopics[0] ?? null;
+    this.selectedSubtopicId = this.selectedSubtopic?.id ?? null;
   }
 
   // ─── Helpers de UI ───────────────────────────────────────────
@@ -137,6 +156,7 @@ export class TopicDetail {
       next: () => {
         this.topicDetail = null;
         this.selectedSubtopic = null;
+        this.selectedSubtopicId = null;
         this.subtopics = [];
       },
     });
@@ -149,6 +169,15 @@ export class TopicDetail {
   // ─── Acciones de subtopics ───────────────────────────────────
   onSelectSubtopic(subtopic: ITopic): void {
     this.selectedSubtopic = subtopic;
+    this.selectedSubtopicId = subtopic.id;
+  }
+
+  onSubtopicContentSaved(updated: ITopic): void {
+    this.selectedSubtopicId = updated.id;
+    this.selectedSubtopic = updated;
+    this.subtopics = this.subtopics.map((subtopic) =>
+      String(subtopic.id) === String(updated.id) ? updated : subtopic,
+    );
   }
 
   onDeletedSubtopic(subtopic: ITopic): void {

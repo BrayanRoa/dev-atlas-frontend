@@ -81,6 +81,7 @@
         <app-topic-content-component
           class="block h-full min-h-0"
           [subtopic]="selectedSubtopic"
+          (contentSaved)="onSubtopicContentSaved($event)"
         />
       </div>
 
