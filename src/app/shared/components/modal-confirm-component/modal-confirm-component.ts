@@ -14,6 +14,7 @@ import { IModalConfirmation } from '../../interfaces/modal-confirmation.interfac
 export class ModalConfirmComponent {
 
   @Input() visible = false;
+  @Output() visibleChange = new EventEmitter<boolean>();
 
   @Input() config: IModalConfirmation | null = null;
 
@@ -23,11 +24,13 @@ export class ModalConfirmComponent {
   onConfirm() {
     this.confirm.emit();
     this.visible = false;
+    this.visibleChange.emit(false);
   }
 
   onCancel() {
     this.cancel.emit();
     this.visible = false;
+    this.visibleChange.emit(false);
   }
 
 }

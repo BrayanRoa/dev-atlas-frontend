@@ -44,3 +44,10 @@
 
     </div>
 </div>
+
+<app-modal-confirm-component
+  [(visible)]="showLogoutConfirmation"
+  [config]="logoutConfirmationConfig"
+  (confirm)="logout()"
+  (cancel)="onCancelLogout()"
+/>
