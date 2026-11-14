@@ -164,5 +164,12 @@
 
 <app-create-edit-modal (created)="onTopicCreated()" />
 
+<app-modal-confirm-component
+  [(visible)]="showLogoutConfirmation"
+  [config]="logoutConfirmationConfig"
+  (confirm)="confirmLogout()"
+  (cancel)="onCancelLogout()"
+/>
+
 <!-- TOAST -->
 <p-toast />

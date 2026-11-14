@@ -14,6 +14,8 @@ import { WorkSpaceService } from '../../../workspaces/services/work-space.servic
 import { AuthService } from '../../../auth/services/auth.service';
 import { ITopicListItem } from '../../../topics/interfaces/topics.interfaces';
 import { IWorkspace, IWorkspaceCreateRequest } from '../../../workspaces/interfaces/workspace.interface';
+import { ModalConfirmComponent } from '../../../../shared/components/modal-confirm-component/modal-confirm-component';
+import { IModalConfirmation } from '../../../../shared/interfaces/modal-confirmation.interface';
 
 @Component({
   selector: 'app-sidebar-component',
@@ -25,6 +27,7 @@ import { IWorkspace, IWorkspaceCreateRequest } from '../../../workspaces/interfa
     CreateEditModal,
     RouterLink,
     RouterLinkActive,
+    ModalConfirmComponent,
   ],
   templateUrl: './sidebar-component.html',
   styleUrl: './sidebar-component.css',
@@ -35,12 +38,21 @@ export class SidebarComponent implements OnInit {
   // Menú y diálogos
   openListWorkspace = false;
   createNewWorkspaceModal = false;
+  showLogoutConfirmation = false;
 
   // Datos que pinta la plantilla
   workspaces: IWorkspace[] = [];
   workspaceSelected: IWorkspace | null = null;
   topics: ITopicListItem[] = [];
   topicSelected: ITopicListItem | null = null;
+
+  logoutConfirmationConfig: IModalConfirmation = {
+    title: 'Confirmar cierre de sesión',
+    message: '¿Seguro que quieres salir de DevAtlas?',
+    icon: 'pi pi-sign-out',
+    confirmButtonText: 'Salir',
+    cancelButtonText: 'Cancelar'
+  };
 
   private readonly topicDialogService = inject(TopicDialogService);
   private readonly workSpaceService = inject(WorkSpaceService);
@@ -77,8 +89,16 @@ export class SidebarComponent implements OnInit {
   }
 
   onLogout(): void {
+    this.showLogoutConfirmation = true;
+  }
+
+  confirmLogout(): void {
     this.authService.logout();
     this.router.navigate(['/auth/login']);
+  }
+
+  onCancelLogout(): void {
+    this.showLogoutConfirmation = false;
   }
 
   // Workspaces: abrir la lista y elegir uno
